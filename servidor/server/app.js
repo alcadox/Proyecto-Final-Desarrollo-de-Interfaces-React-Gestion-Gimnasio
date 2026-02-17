@@ -712,6 +712,87 @@ app.post('/entrenadores/foto', upload.single('image'), (req, res) => {
 });
 
 
+// Actualizar datos del entrenador
+app.put("/actualizarEntrenador/:id", (req, res) => {
+    const id = req.params.id;
+    const {
+        nombre,
+        apellidos,
+        dni,
+        fecha_nacimiento,
+        telefono,
+        email,
+        especialidad, 
+        notas,        
+        fecha_inicio,
+        fecha_fin,
+        tipo_pago,
+        alta
+    } = req.body;
+
+    if (telefono && isNaN(telefono)) {
+        return res.status(400).json({ success: false, message: "Teléfono incorrecto." });
+    }
+
+    // Comprobar DNI duplicado (excluyendo al propio entrenador)
+    db.query("SELECT id FROM trainers WHERE dni = ?", [dni], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Error al verificar DNI." });
+        
+        if (result.length > 0 && result[0].id != id) {
+            return res.status(400).json({ success: false, message: "El DNI ya existe en otro entrenador." });
+        }
+
+        const formatearFecha = (fecha) => (!fecha ? null : new Date(fecha).toISOString().split('T')[0]);
+
+        const query = `
+            UPDATE trainers SET
+                nombre = ?, apellidos = ?, fecha_nacimiento = ?, dni = ?,
+                fecha_inicio = ?, fecha_fin = ?, tipo_pago = ?, alta = ?,
+                telefono = ?, email = ?, especialidad = ?, notas = ?
+            WHERE id = ?
+        `;
+
+        db.query(query, [
+            nombre, apellidos, formatearFecha(fecha_nacimiento), dni,
+            formatearFecha(fecha_inicio), formatearFecha(fecha_fin), tipo_pago, alta,
+            telefono || null, email || null, especialidad || null, notas || null,
+            id
+        ], (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: "Error al actualizar entrenador." });
+            }
+            res.json({ success: true, message: "Entrenador actualizado correctamente." });
+        });
+    });
+});
+
+// Obtener clientes asignados a un entrenador específico
+app.get("/entrenador/:id/clientes", (req, res) => {
+    const id = req.params.id;
+    // Traemos también la foto para que quede bonito en la lista
+    db.query("SELECT id, nombre, apellidos, dni, foto FROM clients WHERE trainer_id = ?", [id], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "Error al obtener clientes." });
+        res.json(results);
+    });
+});
+
+// Desvincular un cliente de su entrenador (poner trainer_id a NULL)
+app.put("/desasignarCliente", (req, res) => {
+    const { clienteId } = req.body;
+    db.query("UPDATE clients SET trainer_id = NULL WHERE id = ?", [clienteId], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Error al desvincular cliente." });
+        res.json({ success: true, message: "Cliente desvinculado correctamente." });
+    });
+});
+
+app.put("/asignarEntrenador", (req, res) => {
+    const { clienteId, trainerId } = req.body;
+    db.query("UPDATE clients SET trainer_id = ? WHERE id = ?", [trainerId, clienteId], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json({ success: true });
+    });
+});
 
 // iniciamos el servidor en el puerto 3001
 app.listen(3001, () => {

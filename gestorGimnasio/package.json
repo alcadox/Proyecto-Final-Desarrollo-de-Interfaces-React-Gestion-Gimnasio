@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.13.4",
     "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0"

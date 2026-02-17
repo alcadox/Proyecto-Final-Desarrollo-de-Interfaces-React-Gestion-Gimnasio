@@ -164,3 +164,8 @@ VALUES
 ('Rocío','Martín Cruz','1997-07-09','70000058A','2025-01-18','2026-01-18','ANUAL',64,169,'Fuerza',6),
 ('Silvia','Lara Ramos','2004-03-25','70000059A','2025-01-20','2025-02-20','MENSUAL',56,160,'Definición',6),
 ('Ainhoa','Soto Vega','1999-09-14','70000060A','2025-01-22','2025-02-22','MENSUAL',62,167,'Tonificar',6);
+
+
+
+ALTER TABLE clients ADD COLUMN foto VARCHAR(255);
+ALTER TABLE trainers ADD COLUMN foto VARCHAR(255);

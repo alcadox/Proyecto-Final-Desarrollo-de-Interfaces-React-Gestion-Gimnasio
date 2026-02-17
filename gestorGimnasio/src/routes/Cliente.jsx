@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import CabeceraEditar from "../components/CabeceraEditar"
-import CardUsuarioAsignado from "../components/CardUsuarioAsignado"
 import CardError from "../components/CardError"
 import CardExito from "../components/CardExito"
 import BotonActualizarUsuario from "../components/BotonActualizarUsuario"
@@ -396,20 +395,139 @@ const Cliente = () => {
                                             onChange={manejarCambio}
                                         ></textarea>
                                     </div>
-                                    {/* Tarjeta interna de Entrenador */}
-                                    <CardUsuarioAsignado
-                                        usuario={entrenador}
-                                        titulo="Entrenador Asignado"
-                                        onChange={manejarCambio}
-                                        trainerId={cliente.trainer_id}
-                                        name="trainer_id"
-                                    />
-
-                                    {cliente.trainer_id && !entrenador && (
-                                        <div className="text-danger small mt-2">
-                                            Entrenador no encontrado.
+                                    {/* --- SECCIÓN ENTRENADOR --- */}
+                                    <div className="col-12 mt-4">
+                                        <div className="d-flex justify-content-between align-items-end mb-2">
+                                            <label className="fw-bold small text-secondary">
+                                                Entrenador Personal
+                                            </label>
+                                            {/* Pequeño badge indicador */}
+                                            {cliente.trainer_id ? (
+                                                entrenador ? (
+                                                    <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                                        <i className="bi bi-check-circle me-1"></i> Asignado
+                                                    </span>
+                                                ) : (
+                                                    <span className="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                                                        <i className="bi bi-hourglass-split me-1"></i> Buscando...
+                                                    </span>
+                                                )
+                                            ) : (
+                                                <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+                                                    <i className="bi bi-dash-circle me-1"></i> Sin asignar
+                                                </span>
+                                            )}
                                         </div>
-                                    )}
+
+                                        {/* Lógica de Renderizado Condicional */}
+                                        {entrenador ? (
+                                            // OPCIÓN A: Entrenador encontrado y cargado -> Tarjeta "Pro"
+                                            <div
+                                                className="card border-0 text-white shadow-sm overflow-hidden"
+                                                style={{
+                                                    backgroundColor: "#253347", // Ligeramente más claro que el fondo
+                                                    transition: "all 0.3s ease"
+                                                }}
+                                            >
+                                                <div className="card-body p-3">
+                                                    <div className="row align-items-center">
+                                                        {/* Avatar */}
+                                                        <div className="col-auto">
+                                                            <img
+                                                                src={entrenador.foto ? `http://localhost:3001${entrenador.foto}` : "/images/img_desconocida.png"}
+                                                                alt="Foto Entrenador"
+                                                                className="rounded-circle border border-2 border-info"
+                                                                style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                                                            />
+                                                        </div>
+                                                        {/* Info Textual */}
+                                                        <div className="col">
+                                                            <h6 className="mb-0 fw-bold text-white">
+                                                                {entrenador.nombre} {entrenador.apellidos}
+                                                            </h6>
+                                                            <small className="text-info opacity-75 d-block mb-1">
+                                                                {entrenador.especialidad || "Entrenador General"}
+                                                            </small>
+                                                            {entrenador.email && (
+                                                                <small className="text-white-50 d-flex align-items-center" style={{fontSize: '0.8rem'}}>
+                                                                    <i className="bi bi-envelope me-2"></i>
+                                                                    {entrenador.email}
+                                                                </small>
+                                                            )}
+                                                        </div>
+                                                        {/* Botones de Acción */}
+                                                        <div className="col-auto d-flex gap-2">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                style={{ width: "36px", height: "36px" }}
+                                                                title="Ver Perfil"
+                                                                onClick={() => navigate(`/Entrenador/${cliente.trainer_id}`)}
+                                                            >
+                                                                <i className="bi bi-eye"></i>
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                style={{ width: "36px", height: "36px" }}
+                                                                title="Desvincular"
+                                                                onClick={() => {
+                                                                    setCliente(prev => ({ ...prev, trainer_id: null }));
+                                                                    setEntrenador(null);
+                                                                }}
+                                                            >
+                                                                <i className="bi bi-link-45deg" style={{fontSize: '1.2rem'}}></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            // OPCIÓN B: No hay entrenador o ID incorrecto -> Input de Asignación
+                                            <div 
+                                                className="p-4 rounded-3 text-center border border-secondary border-opacity-25 border-dashed"
+                                                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                                            >
+                                                {cliente.trainer_id && !entrenador ? (
+                                                    // Caso B1: ID existe pero no devuelve datos (Error)
+                                                    <div className="mb-3">
+                                                        <div className="text-danger mb-2">
+                                                            <i className="bi bi-exclamation-triangle me-2"></i>
+                                                            No se encuentra el entrenador (ID: {cliente.trainer_id})
+                                                        </div>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-secondary"
+                                                            onClick={() => setCliente(prev => ({ ...prev, trainer_id: null }))}
+                                                        >
+                                                            Limpiar ID
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    // Caso B2: Totalmente vacío -> Input para asignar
+                                                    <div className="d-flex flex-column align-items-center">
+                                                        <div className="mb-3 text-white-50 small">
+                                                            Introduce el ID del entrenador para vincularlo
+                                                        </div>
+                                                        <div className="input-group" style={{ maxWidth: "300px" }}>
+                                                            <span className="input-group-text bg-transparent border-secondary text-secondary">
+                                                                ID
+                                                            </span>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control bg-transparent border-secondary text-white shadow-none"
+                                                                placeholder="Ej: 5"
+                                                                name="trainer_id"
+                                                                // Usamos value vacío si es null para que no salga warning de uncontrolled
+                                                                value={cliente.trainer_id || ""} 
+                                                                onChange={manejarCambio}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* --- FIN SECCIÓN ENTRENADOR --- */}
                                 </div>
                             </div>
                         </div>
@@ -590,7 +708,11 @@ const Cliente = () => {
                                             />
                                         </div>
                                         <div className="small text-info mt-1 fw-bold">
-                                            CLIENTE ACTIVO
+                                            {
+                                                cliente.alta === 1
+                                                ? "CLIENTE ACTIVO"
+                                                : "CLIENTE INACTIVO"
+                                            }
                                         </div>
                                     </div>
                                     <BotonActualizarUsuario

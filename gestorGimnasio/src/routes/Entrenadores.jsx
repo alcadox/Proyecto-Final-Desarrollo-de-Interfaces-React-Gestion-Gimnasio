@@ -9,20 +9,15 @@ import { useNavigate } from "react-router-dom";
 
 
 const Entrenadores = () => {
-    // entrenadores: nombre de la variable que guarda los entrenadores
-    // setEntrenadores: nombre de la funcion que añade entrenadores a la variable
     const [entrenadores, setEntrenadores] = useState([]);
 
-    // se ejecuta cada vez que se recarga la pagina o se entra a la pagina /entrenadores
     useEffect(() => {
         traerEntrenadores();
     },[]);
 
     const traerEntrenadores = async () => {
         try {
-            // solicita al backend los entrenadores
             const response = await axios.get('http://localhost:3001/entrenadores');
-            //introduce los entrenadores en la variable entrenadores
             setEntrenadores(response.data);
         } catch (error) {
             console.error('Error al cargar Entrenadores:', error);
@@ -36,28 +31,12 @@ const Entrenadores = () => {
 
     const navigate = useNavigate();
 
-    // buscador: nombre de la variable que guarda el texto del buscador
-    // setBuscador: nombre de la funcion que actualiza "buscador"
     const[buscador, setBuscador] = useState("");
-
-    // error: guarda mensajes de error para mostrarlos en la pagina
-    // seterror: funcion que actualiza 'error'
     const [error, setError] = useState('');
-
-    //mensajeExito: nombre de la variable que guarda el mensaje de exito
-    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
     const [mensajeExito, setMensajeExito] = useState('');
-
-    // error: guarda mensajes de error para mostrarlos en la pagina
-    // seterror: funcion que actualiza 'error'
     const [errorSuperior, setErrorSuperior] = useState('');
-
-    // mensajeExito: nombre de la variable que guarda el mensaje de exito
-    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
     const [mensajeExitoSuperior, setMensajeExitoSuperior] = useState('');
 
-    // formData: nombre de la variable que guarda los datos del nuevo entrenador
-    // setFormData: nombre de la funcion que añade los datos al diccionario
     const [formData, setFormData] = useState({
         nombre: "",
         apellidos: "",
@@ -73,7 +52,6 @@ const Entrenadores = () => {
         alta: ""
     });
 
-    // funcion que añade la variable que cambie de un campo de entrenador
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(
@@ -86,28 +64,22 @@ const Entrenadores = () => {
         );
     };
 
-    // funcion que se llama al pulsar el botón de añadir un nuevo entrenador
     const clickBotonNuevoEntrenador = async (e) => {
         setMensajeExitoSuperior("");
         setErrorSuperior("");
-        //previene que se recargue la pagina
         e.preventDefault();
 
-        // comprobamos que los campos obligatorios no esten vacios
         if (!comprobacionBasicaCampos()) return;
 
         try {
             const response = await axios.post('http://localhost:3001/nuevoEntrenador', formData);
-            // si todo OK
             setMensajeExito(response.data.message);
             traerEntrenadores();
 
         } catch(err){
             if(err.response && err.response.data){
-                // si el servidor responde con un error, mostramos el mensaje que nos envió
                 setError(err.response.data.message);
             } else {
-                // cualquier otro error de conexión
                 alert("Error al conectar con el servidor");
             }
             console.log("Error al añadir entrenador: ", err);
@@ -118,11 +90,8 @@ const Entrenadores = () => {
         setError("");
         setMensajeExito("");
 
-        // lista para guardar los campos vacios para posteriormente mostrarlos en un mensaje de error
         let nuevosCamposVacios = [];
         
-        // recorre el diccionario formData y si la clave/campo es obligatorio
-        // entra en el switch y añade el campo vacio a la lista
         for (let clave in formData) {
 
             switch (clave) {
@@ -166,7 +135,6 @@ const Entrenadores = () => {
         }
     };
 
-    // actualiza la variable "buscador" con el texto del buscador
     const manejarBuscar = (e) => {
         setBuscador(e.target.value);
     };
@@ -179,17 +147,14 @@ const Entrenadores = () => {
                 }
             );
             
-            // si todo OK
             setMensajeExitoSuperior(response.data.message);
             setErrorSuperior("");
             traerEntrenadores();
 
         } catch(err){
             if(err.response && err.response.data){
-                // si el servidor responde con un error, mostramos el mensaje que nos envió
                 setErrorSuperior(err.response.data.message);
             } else {
-                // cualquier otro error de conexión
                 alert("Error al conectar con el servidor");
             }
             console.log("Error al eliminar entrenador: ", err);
@@ -197,7 +162,6 @@ const Entrenadores = () => {
         }
     }
     
-    // aplica los filtros
     const entrenadoresFiltrados = entrenadores.filter(entrenador => {
         const texto = buscador.toLowerCase();
 
@@ -213,251 +177,268 @@ const Entrenadores = () => {
         navigate(`/Entrenador/${idEntrenador}`);
     };
 
+    // Estilo común para inputs
+    const inputStyle = { backgroundColor: "#0f172a", border: "1px solid #334155", color: "white" };
+
     return (
-        
-        <div className="container-fluid px-4" style={{ marginTop: "80px" }}>
-            <Menu nombre={'Admin'}/>
-            <div className="row g-4">
-                {/* Panel izquierdo - Alta entrenador */}
-                <div className="col-12 col-lg-4 col-xxl-3 ">
-                    <div className="card shadow-sm border-0 rounded-4 h-100">
-                    <div className="card-body p-4 ">
-                        <h5 className="fw-bold mb-3">Añadir nuevo entrenador</h5>
+        <div className="min-vh-100" style={{ backgroundColor: "#0f172a", paddingTop: "80px", paddingBottom: "40px" }}>
+            <div className="container-fluid px-4">
+                <Menu nombre={'Admin'}/>
+                <div className="row g-4">
+                    {/* Panel izquierdo - Alta entrenador */}
+                    <div className="col-12 col-lg-4 col-xxl-3 ">
+                        <div className="card shadow-lg border-0 rounded-4 h-100" style={{ backgroundColor: "#1e293b" }}>
+                        <div className="card-body p-4 text-white">
+                            <h5 className="fw-bold mb-3 text-info">Añadir nuevo entrenador</h5>
 
-                        <form className="row g-3">
-                        <div className="col-6">
-                            <label className="form-label">Nombre</label>
-                            <input
-                                type="text"
-                                className="form-control rounded-3"
-                                name='nombre'
-                                value={formData.nombre}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Apellidos</label>
-                            <input
-                                type="text"
-                                className="form-control rounded-3"
-                                name='apellidos'
-                                value={formData.apellidos}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">DNI</label>
-                            <input
-                                type="text"
-                                className="form-control rounded-3"
-                                name='dni'
-                                value={formData.dni}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Fecha nacimiento</label>
-                            <input
-                                type="date"
-                                className="form-control rounded-3"
-                                name='fecha_nacimiento'
-                                value={formData.fecha_nacimiento}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Teléfono</label>
-                            <input
-                                type="text"
-                                className="form-control rounded-3"
-                                name='telefono'
-                                value={formData.telefono}
-                                onChange={handleChange}
-                                placeholder='Opcional'
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Email</label>
-                            <input 
-                                type="email"
-                                className="form-control rounded-3"
-                                name='email'
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder='Opcional'
-                            />
-                        </div>
-
-                        <div className="col-12">
-                            <label className="form-label">Especialidad</label>
-                            <input
-                                type="text"
-                                className="form-control rounded-3"
-                                rows="2"
-                                name='especialidad'
-                                value={formData.especialidad}
-                                onChange={handleChange}
-                                placeholder='Opcional'
-                            />
-                        </div>
-
-                        <div className="col-12">
-                            <label className="form-label">Notas</label>
-                            <textarea
-                                className="form-control rounded-3"
-                                rows="2"
-                                name='notas'
-                                value={formData.notas}
-                                onChange={handleChange}
-                                placeholder='Opcional'
-                            >
-                            </textarea>
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Fecha inicio</label>
-                            <input
-                                type="date"
-                                className="form-control rounded-3"
-                                name='fecha_inicio'
-                                value={formData.fecha_inicio}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Fecha fin (opcional)</label>
-                            <input
-                                type="date"
-                                className="form-control rounded-3"
-                                name='fecha_fin'
-                                value={formData.fecha_fin}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div className="col-6">
-                            <label className="form-label">Tipo de pago</label>
-                            <select 
-                                className="form-select rounded-3"
-                                name='tipo_pago'
-                                value={formData.tipo_pago}
-                                onChange={handleChange}
-                            >
-                                <option>MENSUAL</option>
-                                <option>ANUAL</option>
-                                <option>SEMANAL</option>
-                            </select>
-                        </div>
-
-                        <div className="col-6 d-flex align-items-center">
-                            <div className="form-check mt-4">
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                name='alta'
-                                onChange={handleChange}
-                                checked 
-                            />
-                            <label className="form-check-label">Alta</label>
+                            <form className="row g-3">
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Nombre</label>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='nombre'
+                                    value={formData.nombre}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
                             </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Apellidos</label>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='apellidos'
+                                    value={formData.apellidos}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">DNI</label>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='dni'
+                                    value={formData.dni}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Fecha nacimiento</label>
+                                <input
+                                    type="date"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='fecha_nacimiento'
+                                    value={formData.fecha_nacimiento}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Teléfono</label>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='telefono'
+                                    value={formData.telefono}
+                                    onChange={handleChange}
+                                    placeholder='Opcional'
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Email</label>
+                                <input 
+                                    type="email"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='email'
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder='Opcional'
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label small text-secondary fw-bold">Especialidad</label>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    rows="2"
+                                    name='especialidad'
+                                    value={formData.especialidad}
+                                    onChange={handleChange}
+                                    placeholder='Opcional'
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label small text-secondary fw-bold">Notas</label>
+                                <textarea
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    rows="2"
+                                    name='notas'
+                                    value={formData.notas}
+                                    onChange={handleChange}
+                                    placeholder='Opcional'
+                                    style={inputStyle}
+                                >
+                                </textarea>
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Fecha inicio</label>
+                                <input
+                                    type="date"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='fecha_inicio'
+                                    value={formData.fecha_inicio}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Fecha fin</label>
+                                <input
+                                    type="date"
+                                    className="form-control rounded-3 border-0 shadow-none"
+                                    name='fecha_fin'
+                                    value={formData.fecha_fin}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label small text-secondary fw-bold">Tipo de pago</label>
+                                <select 
+                                    className="form-select rounded-3 border-0 shadow-none"
+                                    name='tipo_pago'
+                                    value={formData.tipo_pago}
+                                    onChange={handleChange}
+                                    style={inputStyle}
+                                >
+                                    <option className='bg-dark'>MENSUAL</option>
+                                    <option className='bg-dark'>ANUAL</option>
+                                    <option className='bg-dark'>SEMANAL</option>
+                                </select>
+                            </div>
+
+                            <div className="col-6 d-flex align-items-center">
+                                <div className="form-check mt-4">
+                                <input
+                                    className="form-check-input shadow-none"
+                                    type="checkbox"
+                                    name='alta'
+                                    onChange={handleChange}
+                                    checked 
+                                    style={{ cursor: "pointer", backgroundColor: formData.alta ? "#0ea5e9" : "transparent", borderColor: "#334155" }}
+                                />
+                                <label className="form-check-label small text-white ms-2">Alta</label>
+                                </div>
+                            </div>
+                            {error &&(
+                                <CardError error={error}/>
+                            )}
+                            {mensajeExito &&(
+                                <CardExito mensaje={mensajeExito}/>
+                            )}
+                            <div className="col-12">
+                                <button 
+                                    type="button"
+                                    className="btn btn-success w-100 rounded-pill py-2 fw-bold"
+                                    onClick={clickBotonNuevoEntrenador}
+                                >
+                                Añadir entrenador
+                                </button>
+                            </div>
+                            </form>
                         </div>
-                        {error &&(
-                            <CardError error={error}/>
-                        )}
-                        {mensajeExito &&(
-                            <CardExito mensaje={mensajeExito}/>
-                        )}
-                        <div className="col-12">
-                            <button 
-                                type="button"
-                                className="btn btn-success w-100 rounded-pill py-2"
-                                onClick={clickBotonNuevoEntrenador}
-                            >
-                            Añadir entrenador
-                            </button>
-                        </div>
-                        </form>
                     </div>
                 </div>
-            </div>
 
-            {/* Panel derecho - Tabla */}
-            <div className="col-12 col-lg-8 col-xxl-9">
-                <div className="card shadow-sm border-0 rounded-4 h-100">
-                    <div className="card-body p-4">
-                        <h2 className="fw-bold mb-3">Entrenadores</h2>
-                        {errorSuperior &&(
-                            <CardError error={errorSuperior}/>
-                        )}
-                        {mensajeExitoSuperior &&(
-                            <CardExito mensaje={mensajeExitoSuperior}/>
-                        )}
-                        <div className="d-flex gap-3 mb-3">
-                        <input
-                            type="text"
-                            className="form-control rounded-pill"
-                            placeholder="Buscar..."
-                            onChange={manejarBuscar}
-                            value={buscador}
-                        />
-                        </div>
+                {/* Panel derecho - Tabla */}
+                <div className="col-12 col-lg-8 col-xxl-9">
+                    <div className="card shadow-lg border-0 rounded-4 h-100" style={{ backgroundColor: "#1e293b" }}>
+                        <div className="card-body p-4 text-white">
+                            <h2 className="fw-bold mb-3 text-info">Entrenadores</h2>
+                            {errorSuperior &&(
+                                <CardError error={errorSuperior}/>
+                            )}
+                            {mensajeExitoSuperior &&(
+                                <CardExito mensaje={mensajeExitoSuperior}/>
+                            )}
+                            <div className="d-flex gap-3 mb-3">
+                            <input
+                                type="text"
+                                className="form-control rounded-pill border-0 shadow-none"
+                                placeholder="Buscar..."
+                                onChange={manejarBuscar}
+                                value={buscador}
+                                style={inputStyle}
+                            />
+                            </div>
 
-                        <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
-                            <table className="table table-hover align-middle">
-                                <thead className="sticky-top" style={{ backgroundColor: '#111', color: '#fff' }}>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Apellidos</th>
-                                        <th>Fecha inicio</th>
-                                        <th>Fecha fin</th>
-                                        <th>Alta</th>
-                                        <th>Especialidad</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {entrenadoresFiltrados.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" className="text-center py-4">
-                                            No hay entrenadores
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    entrenadoresFiltrados.map(entrenador => (
-                                    <tr key={entrenador.id}>
-                                        <td>{entrenador.id}</td>
-                                        <td>{entrenador.nombre}</td>
-                                        <td>{entrenador.apellidos}</td>
-                                        <td>{formatDate(entrenador.fecha_inicio)}</td>
-                                        <td>{formatDate(entrenador.fecha_fin)}</td>
-                                        <td>
-                                            <input type="checkbox" checked={entrenador.alta} readOnly />
-                                        </td>
-                                        <td>{entrenador.especialidad}</td>
-                                        <td className='d-flex gap-2'>
-                                            <BotonEliminar
-                                                texto={"Eliminar"}
-                                                onClick={() => manejarClickBorrado(entrenador.id)}
-                                            />
-                                            <BotonEditar
-                                                texto={"Editar"}
-                                                onClick={() => manejarClickEditar(entrenador.id)}
-                                            />
-                                        </td>
-                                    </tr>
-                                    ))
-                                )}
-                                </tbody>
-                            </table>
+                            <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                <table className="table table-hover table-dark align-middle" style={{ backgroundColor: 'transparent' }}>
+                                    <thead className="sticky-top" style={{ backgroundColor: '#0f172a' }}>
+                                        <tr>
+                                            <th className="bg-dark text-secondary">ID</th>
+                                            <th className="bg-dark text-secondary">Nombre</th>
+                                            <th className="bg-dark text-secondary">Apellidos</th>
+                                            <th className="bg-dark text-secondary">Fecha inicio</th>
+                                            <th className="bg-dark text-secondary">Fecha fin</th>
+                                            <th className="bg-dark text-secondary">Alta</th>
+                                            <th className="bg-dark text-secondary">Especialidad</th>
+                                            <th className="bg-dark text-secondary">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {entrenadoresFiltrados.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="8" className="text-center py-4 text-white-50">
+                                                No hay entrenadores
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        entrenadoresFiltrados.map(entrenador => (
+                                        <tr key={entrenador.id}>
+                                            <td className='text-white'>{entrenador.id}</td>
+                                            <td className='text-white'>{entrenador.nombre}</td>
+                                            <td className='text-white'>{entrenador.apellidos}</td>
+                                            <td className='text-white-50'>{formatDate(entrenador.fecha_inicio)}</td>
+                                            <td className='text-white-50'>{formatDate(entrenador.fecha_fin)}</td>
+                                            <td>
+                                                <input type="checkbox" checked={entrenador.alta} readOnly style={{ accentColor: "#0ea5e9" }} />
+                                            </td>
+                                            <td className='text-info'>{entrenador.especialidad}</td>
+                                            <td className='d-flex gap-2'>
+                                                <BotonEliminar
+                                                    texto={"Eliminar"}
+                                                    onClick={() => manejarClickBorrado(entrenador.id)}
+                                                />
+                                                <BotonEditar
+                                                    texto={"Editar"}
+                                                    onClick={() => manejarClickEditar(entrenador.id)}
+                                                />
+                                            </td>
+                                        </tr>
+                                        ))
+                                    )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>

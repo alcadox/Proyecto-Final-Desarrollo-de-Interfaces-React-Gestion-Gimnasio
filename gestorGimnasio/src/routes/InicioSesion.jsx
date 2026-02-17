@@ -1,120 +1,96 @@
-import { useState } from 'react'; // useState sirve para guardar datos que cambian (estado)
-import { useNavigate } from 'react-router-dom'; // useNavigate para cambiar de pagina (navegar)
-import axios from 'axios'; // axios para hacer peticiones http al servidor
-import 'bootstrap/dist/css/bootstrap.min.css'; // importamos estilos de bootstrap
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const InicioSesion = () => {
-	// estados (variables que recuerdan cosas entre renderizados)
-    
-	// username: guarda el nombre/usuario que escribe la persona
-	// setusername: funcion que actualiza 'username'
-	const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-	// password: guarda la contrasena que escribe la persona
-	// setpassword: funcion que actualiza 'password'
-	const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-	// error: guarda mensajes de error para mostrarlos en la pagina
-	// seterror: funcion que actualiza 'error'
-	const [error, setError] = useState('');
+    const handleLogin = async () => {
+        setError('');
 
-	// obtenemos la funcion para navegar entre paginas
-	const navigate = useNavigate();
+        if (!username || !password) {
+            setError('Por favor, completa todos los campos para continuar.');
+            return;
+        }
 
-	// funcion que se ejecuta cuando el usuario intenta iniciar sesion
-	const handleLogin = async () => {
-		// 1) limpiar error anterior (si lo hubiera)
-		setError('');
+        try {
+            const response = await axios.post('http://localhost:3001/login', {
+                username,
+                password,
+            });
 
-		// 2) validacion simple en el frontend: ambos campos obligatorios
-		if (!username || !password) {
-			// si falta usuario o contrasena, mostramos un mensaje y salimos
-			setError('Por favor, completa todos los campos para continuar.');
-			return; // no seguir
-		}
+            if (response.data.ok) {
+                navigate('/Clientes');
+            } else {
+                setError('Usuario o contraseña incorrectos.');
+            }
+        } catch (err) {
+            console.error(err);
+            setError('No se pudo conectar con el servidor. Inténtalo más tarde.');
+        }
+    };
 
-		try {
-			// 3) enviamos los datos al servidor via POST
-			//    la url 'http://localhost:3001/login'
-			const response = await axios.post('http://localhost:3001/login', {
-				username,
-				password,
-			});
+    return (
+        <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: '100vh', backgroundColor: '#0f172a' }} // Fondo oscuro principal
+        >
+            <div className="card border-0 shadow-lg rounded-4" style={{ width: '100%', maxWidth: '420px', backgroundColor: '#1e293b' }}> 
+                <div className="card-body p-5">
 
-			// 4) revisamos la respuesta del servidor
-			if (response.data.ok) {
-				// si el servidor dice que todo esta bien, navegamos a la pantalla de clientes
-				navigate('/Clientes');
-			} else {
-				// si el servidor dice que no esta bien, mostramos mensaje de credenciales incorrectas
-				setError('Usuario o contraseña incorrectos.');
-			}
-		} catch (err) {
-			// 5) si hubo un error de red o servidor, lo mostramos por consola y damos un mensaje al usuario
-			console.error(err);
-			setError('No se pudo conectar con el servidor. Inténtalo más tarde.');
-		}
-	};
+                    {/* Titulo con color de acento */}
+                    <h2 className="text-center fw-bold mb-4 text-info">Inicio de Sesión</h2>
 
-	// ui
-	return (
-		<div
-			className="d-flex justify-content-center align-items-center"
-			style={{ minHeight: '100vh', background: '#f5f7fb' }}
-		>
-			{/* tarjeta centrada que contiene el formulario */}
-			<div className="card border-0 shadow-lg rounded-4" style={{ width: '100%', maxWidth: '420px' }}>
-				<div className="card-body p-5">
+                    {error && (
+                            <div className="alert alert-danger rounded-3 text-center py-2 border-0 bg-danger bg-opacity-25 text-white">
+                                {error}
+                            </div>
+                        )
+                    }
 
-					{/* titulo */}
-					<h2 className="text-center fw-bold mb-4">Inicio de Sesión</h2>
+                    <div className="d-flex flex-column gap-3">
+                        <div>
+                            <label className="form-label fw-bold small text-secondary">Usuario</label>
+                            <input
+                                type="text"
+                                className="form-control form-control-lg rounded-3 border-0 text-white shadow-none"
+                                placeholder="Introduce tu usuario"
+                                value={username} 
+                                onChange={(e) => setUsername(e.target.value)}
+                                style={{ backgroundColor: "#0f172a", border: "1px solid #334155" }} // Input oscuro
+                            />
+                        </div>
 
-					{/* si hay un mensaje de error, se muestra esta alerta */}
-					{error && (
-							<div className="alert alert-danger rounded-3 text-center py-2">
-								{error}
-							</div>
-						)
-					}
+                        <div>
+                            <label className="form-label fw-bold small text-secondary">Contraseña</label>
+                            <input
+                                type="password"
+                                className="form-control form-control-lg rounded-3 border-0 text-white shadow-none"
+                                placeholder="Introduce tu contraseña"
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                                style={{ backgroundColor: "#0f172a", border: "1px solid #334155" }} // Input oscuro
+                            />
+                        </div>
 
-					<div className="d-flex flex-column gap-3">
-						{/* campo de usuario */}
-						<div>
-							<label className="form-label fw-semibold">Usuario</label>
-							<input
-								type="text"
-								className="form-control form-control-lg rounded-3"
-								placeholder="Introduce tu usuario"
-								value={username} 
-								onChange={(e) => setUsername(e.target.value)} // al escribir, actualizamos 'username'
-							/>
-						</div>
-
-						{/* campo de contrasena */}
-						<div>
-							<label className="form-label fw-semibold">Contraseña</label>
-							<input
-								type="password"
-								className="form-control form-control-lg rounded-3"
-								placeholder="Introduce tu contraseña"
-								value={password} 
-								onChange={(e) => setPassword(e.target.value)} // al escribir, actualizamos 'password'
-								onKeyDown={(e) => e.key === 'Enter' && handleLogin()} // si presiona enter, intentamos iniciar sesion
-							/>
-						</div>
-
-						{/* boton que llama a handleLogin cuando se clickea */}
-						<button
-							className="btn btn-primary btn-lg rounded-pill mt-3 fw-semibold"
-							onClick={handleLogin}
-						>
-							Iniciar sesión
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+                        <button
+                            className="btn btn-primary btn-lg rounded-pill mt-3 fw-semibold border-0"
+                            onClick={handleLogin}
+                            style={{ background: "linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%)" }} // Botón con gradiente
+                        >
+                            Iniciar sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default InicioSesion;

@@ -12,40 +12,20 @@ const Clientes = () => {
 
     const navigate = useNavigate();
 
-    // clientes: nombre de la variable que guarda los clientes
-    // setClientes: nombre de la funcion que añade clientes a la variable
     const [clientes, setClientes] = useState([]);
-
-    // buscador: nombre de la variable que guarda el texto del buscador
-    // setBuscador: nombre de la funcion que actualiza "buscador"
     const[buscador, setBuscador] = useState("");
-
-    // error: guarda mensajes de error para mostrarlos en la pagina
-	// seterror: funcion que actualiza 'error'
 	const [error, setError] = useState('');
-
-    // error: guarda mensajes de error para mostrarlos en la pagina
-	// seterror: funcion que actualiza 'error'
     const [errorSuperior, setErrorSuperior] = useState('');
-
-    //mensajeExito: nombre de la variable que guarda el mensaje de exito
-    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
     const [mensajeExitoSuperior, setMensajeExitoSuperior] = useState('');
-
-    //mensajeExito: nombre de la variable que guarda el mensaje de exito
-    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
 	const [mensajeExito, setMensajeExito] = useState('');
 
-    // se ejecuta cada vez que se recarga la pagina o se entra a la pagina /clientes
     useEffect(() => {
         fetchClientes();
     }, []);
 
     const fetchClientes = async () => {
         try {
-            // solicita al backend los clientes
             const response = await axios.get('http://localhost:3001/clientes');
-            //introduce los clientes en la variable clientes
             setClientes(response.data);
         } catch (error) {
             console.error('Error al cargar clientes:', error);
@@ -58,8 +38,6 @@ const Clientes = () => {
         return new Date(date).toISOString().split('T')[0];
     };
 
-    // formData: nombre de la variable que guarda los datos del nuevo cliente
-    // setFormData: nombre de la funcion que añade los datos al diccionario
     const [formData, setFormData] = useState({
         nombre: "",
         apellidos: "",
@@ -77,7 +55,6 @@ const Clientes = () => {
         alta: ""
     });
     
-    // funcion que añade la variable que cambie de un campo de cliente
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(
@@ -90,28 +67,22 @@ const Clientes = () => {
         );
     };
 
-    // funcion que se llama al pulsar el botón de añadir un nuevo cliente
     const clickBotonNuevoCliente = async (e) => {
         setMensajeExitoSuperior("");
         setErrorSuperior("");
-        //previene que se recargue la pagina
         e.preventDefault();
 
-        // comprobamos que los campos obligatorios no esten vacios
         if (!comprobacionBasicaCampos()) return;
 
         try {
             const response = await axios.post('http://localhost:3001/nuevoCliente', formData);
-            // si todo OK
             setMensajeExito(response.data.message);
             fetchClientes();
 
         } catch(err){
             if(err.response && err.response.data){
-                // si el servidor responde con un error, mostramos el mensaje que nos envió
                 setError(err.response.data.message);
             } else {
-                // cualquier otro error de conexión
                 alert("Error al conectar con el servidor");
             }
             console.log("Error al añadir cliente: ", err);
@@ -123,11 +94,8 @@ const Clientes = () => {
         setError("");
         setMensajeExito("");
 
-        // lista para guardar los campos vacios para posteriormente mostrarlos en un mensaje de error
         let nuevosCamposVacios = [];
         
-        // recorre el diccionario formData y si la clave/campo es obligatorio
-        // entra en el switch y añade el campo vacio a la lista
         for (let clave in formData) {
 
             switch (clave) {
@@ -171,12 +139,10 @@ const Clientes = () => {
         }
     };
 
-    // actualiza la variable "buscador" con el texto del buscador
     const manejarBuscar = (e) => {
         setBuscador(e.target.value);
     };
     
-    // aplica los filtros
     const clientesFiltrados = clientes.filter(cliente => {
         const texto = buscador.toLowerCase();
 
@@ -195,17 +161,14 @@ const Clientes = () => {
                 }
             );
             
-            // si todo OK
             setMensajeExitoSuperior(response.data.message);
             setErrorSuperior("");
             fetchClientes();
 
         } catch(err){
             if(err.response && err.response.data){
-                // si el servidor responde con un error, mostramos el mensaje que nos envió
                 setErrorSuperior(err.response.data.message);
             } else {
-                // cualquier otro error de conexión
                 alert("Error al conectar con el servidor");
             }
             console.log("Error al eliminar cliente: ", err);
@@ -217,272 +180,291 @@ const Clientes = () => {
         navigate(`/Cliente/${idCliente}`);
     };
 
+    // Estilo común para inputs
+    const inputStyle = { backgroundColor: "#0f172a", border: "1px solid #334155", color: "white" };
+
     return (
-        
-        <div className="container-fluid px-4" style={{ marginTop: "80px" }}>
-            <Menu nombre={'Admin'}/>
-            <div className="row g-4">
-                {/* Panel izquierdo - Alta cliente */}
-                <div className="col-12 col-lg-4 col-xxl-3 ">
-                    <div className="card shadow-sm border-0 rounded-4 h-100">
-                    <div className="card-body p-4 ">
-                        <h5 className="fw-bold mb-3">Añadir nuevo cliente</h5>
+        <div className="min-vh-100" style={{ backgroundColor: "#0f172a", paddingTop: "80px", paddingBottom: "40px" }}>
+            <div className="container-fluid px-4">
+                <Menu nombre={'Admin'}/>
+                <div className="row g-4">
+                    {/* Panel izquierdo - Alta cliente */}
+                    <div className="col-12 col-lg-4 col-xxl-3 ">
+                        <div className="card shadow-lg border-0 rounded-4 h-100" style={{ backgroundColor: "#1e293b" }}>
+                            <div className="card-body p-4 text-white">
+                                <h5 className="fw-bold mb-3 text-info">Añadir nuevo cliente</h5>
 
-                        <form className="row g-3">
-                            
-                            <div className="col-6">
-                                <label className="form-label">Nombre</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control rounded-3" 
-                                    name="nombre" 
-                                    value={formData.nombre} 
-                                    onChange={handleChange} 
+                                <form className="row g-3">
+                                    
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Nombre</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="nombre" 
+                                            value={formData.nombre} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Apellidos</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="apellidos" 
+                                            value={formData.apellidos} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">DNI</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="dni" 
+                                            value={formData.dni} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Fecha nacimiento</label>
+                                        <input 
+                                            type="date" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="fecha_nacimiento" 
+                                            value={formData.fecha_nacimiento} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Teléfono</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="telefono" 
+                                            value={formData.telefono} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Email</label>
+                                        <input 
+                                            type="email" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="email" 
+                                            value={formData.email} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Peso (kg)</label>
+                                        <input 
+                                            type="number" 
+                                            step="0.01" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="peso" 
+                                            value={formData.peso} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Altura (cm)</label>
+                                        <input 
+                                            type="number" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="altura" 
+                                            value={formData.altura} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-12">
+                                        <label className="form-label small text-secondary fw-bold">Objetivo</label>
+                                        <textarea 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            rows="2" 
+                                            name="objetivo" 
+                                            value={formData.objetivo} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        ></textarea>
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Fecha inicio</label>
+                                        <input 
+                                            type="date" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="fecha_inicio" 
+                                            value={formData.fecha_inicio} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Fecha fin</label>
+                                        <input 
+                                            type="date" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="fecha_fin" 
+                                            value={formData.fecha_fin} 
+                                            onChange={handleChange} 
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Tipo de pago</label>
+                                        <select 
+                                            className="form-select rounded-3 border-0 shadow-none" 
+                                            name="tipo_pago" 
+                                            value={formData.tipo_pago} 
+                                            onChange={handleChange}
+                                            style={inputStyle}
+                                        >
+                                            <option className='bg-dark'>MENSUAL</option>
+                                            <option className='bg-dark'>ANUAL</option>
+                                            <option className='bg-dark'>SEMANAL</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="col-6">
+                                        <label className="form-label small text-secondary fw-bold">Entrenador ID</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control rounded-3 border-0 shadow-none" 
+                                            name="trainer_id" 
+                                            value={formData.trainer_id} 
+                                            onChange={handleChange} 
+                                            placeholder='Opcional'
+                                            style={inputStyle}
+                                        />
+                                    </div>
+
+                                    <div className="col-6 d-flex align-items-center">
+                                        <div className="form-check mt-4">
+                                            <input 
+                                                className="form-check-input shadow-none" 
+                                                type="checkbox" 
+                                                name="alta" 
+                                                onChange={handleChange} 
+                                                checked
+                                                style={{ cursor: "pointer", backgroundColor: formData.alta ? "#0ea5e9" : "transparent", borderColor: "#334155" }}
+                                            />
+                                            <label className="form-check-label small text-white ms-2">Alta</label>
+                                        </div>
+                                    </div>
+                                    {error &&(
+                                        <CardError error={error}/>
+                                    )}
+                                    {mensajeExito &&(
+                                        <CardExito mensaje={mensajeExito}/>
+                                    )}
+                                    <div className="col-12">
+                                        <button
+                                            type="button"
+                                            className="btn btn-success w-100 rounded-pill py-2 fw-bold"
+                                            onClick={clickBotonNuevoCliente}>
+                                        Añadir cliente
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Panel derecho - Tabla */}
+                    <div className="col-12 col-lg-8 col-xxl-9">
+                        <div className="card shadow-lg border-0 rounded-4 h-100" style={{ backgroundColor: "#1e293b" }}>
+                            <div className="card-body p-4 text-white">
+                                <h2 className="fw-bold mb-3 text-info">Clientes</h2>
+                                {errorSuperior &&(
+                                    <CardError error={errorSuperior}/>
+                                )}
+                                {mensajeExitoSuperior &&(
+                                    <CardExito mensaje={mensajeExitoSuperior}/>
+                                )}
+                                <div className="d-flex gap-3 mb-3">
+                                <input
+                                    type="text"
+                                    className="form-control rounded-pill border-0 shadow-none"
+                                    placeholder="Buscar..."
+                                    onChange={manejarBuscar}
+                                    value={buscador}
+                                    style={inputStyle}
                                 />
-                            </div>
+                                </div>
 
-                            <div className="col-6">
-                                <label className="form-label">Apellidos</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control rounded-3" 
-                                    name="apellidos" 
-                                    value={formData.apellidos} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">DNI</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control rounded-3" 
-                                    name="dni" 
-                                    value={formData.dni} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Fecha nacimiento</label>
-                                <input 
-                                    type="date" 
-                                    className="form-control rounded-3" 
-                                    name="fecha_nacimiento" 
-                                    value={formData.fecha_nacimiento} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Teléfono</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control rounded-3" 
-                                    name="telefono" 
-                                    value={formData.telefono} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Email</label>
-                                <input 
-                                    type="email" 
-                                    className="form-control rounded-3" 
-                                    name="email" 
-                                    value={formData.email} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Peso (kg)</label>
-                                <input 
-                                    type="number" 
-                                    step="0.01" 
-                                    className="form-control rounded-3" 
-                                    name="peso" 
-                                    value={formData.peso} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Altura (cm)</label>
-                                <input 
-                                    type="number" 
-                                    className="form-control rounded-3" 
-                                    name="altura" 
-                                    value={formData.altura} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                />
-                            </div>
-
-                            <div className="col-12">
-                                <label className="form-label">Objetivo</label>
-                                <textarea 
-                                    className="form-control rounded-3" 
-                                    rows="2" 
-                                    name="objetivo" 
-                                    value={formData.objetivo} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                ></textarea>
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Fecha inicio</label>
-                                <input 
-                                    type="date" 
-                                    className="form-control rounded-3" 
-                                    name="fecha_inicio" 
-                                    value={formData.fecha_inicio} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Fecha fin (opcional)</label>
-                                <input 
-                                    type="date" 
-                                    className="form-control rounded-3" 
-                                    name="fecha_fin" 
-                                    value={formData.fecha_fin} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Tipo de pago</label>
-                                <select 
-                                    className="form-select rounded-3" 
-                                    name="tipo_pago" 
-                                    value={formData.tipo_pago} 
-                                    onChange={handleChange}
-                                >
-                                    <option>MENSUAL</option>
-                                    <option>ANUAL</option>
-                                    <option>SEMANAL</option>
-                                </select>
-                            </div>
-
-                            <div className="col-6">
-                                <label className="form-label">Entrenador ID</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control rounded-3" 
-                                    name="trainer_id" 
-                                    value={formData.trainer_id} 
-                                    onChange={handleChange} 
-                                    placeholder='Opcional'
-                                />
-                            </div>
-
-                            <div className="col-6 d-flex align-items-center">
-                                <div className="form-check mt-4">
-                                    <input 
-                                        className="form-check-input" 
-                                        type="checkbox" 
-                                        name="alta" 
-                                        onChange={handleChange} 
-                                        checked
-                                    />
-                                    <label className="form-check-label">Alta</label>
+                                <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                <table className="table table-hover table-dark align-middle" style={{ backgroundColor: 'transparent' }}>
+                                    <thead className="sticky-top" style={{ backgroundColor: '#0f172a' }}>
+                                    <tr>
+                                        <th className="bg-dark text-secondary">ID</th>
+                                        <th className="bg-dark text-secondary">Nombre</th>
+                                        <th className="bg-dark text-secondary">Apellidos</th>
+                                        <th className="bg-dark text-secondary">Fecha inicio</th>
+                                        <th className="bg-dark text-secondary">Fecha fin</th>
+                                        <th className="bg-dark text-secondary">Alta</th>
+                                        <th className="bg-dark text-secondary">Acciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {clientesFiltrados.length === 0 ? (
+                                        <tr>
+                                        <td colSpan="7" className="text-center py-4 text-white-50">
+                                            No hay clientes
+                                        </td>
+                                        </tr>
+                                    ) : (
+                                        clientesFiltrados.map(cliente => (
+                                        <tr key={cliente.id}>
+                                            <td className='text-white'>{cliente.id}</td>
+                                            <td className='text-white'>{cliente.nombre}</td>
+                                            <td className='text-white'>{cliente.apellidos}</td>
+                                            <td className='text-white-50'>{formatDate(cliente.fecha_inicio)}</td>
+                                            <td className='text-white-50'>{formatDate(cliente.fecha_fin)}</td>
+                                            <td>
+                                            <input type="checkbox" checked={cliente.alta} readOnly style={{ accentColor: "#0ea5e9" }} />
+                                            </td>
+                                            <td className='d-flex gap-2'>
+                                                <BotonEliminar
+                                                    texto={"Eliminar"}
+                                                    onClick={() => manejarClickBorrado(cliente.id)}
+                                                />
+                                                <BotonEditar
+                                                    texto={"Editar"}
+                                                    onClick={() => manejarClickEditar(cliente.id)}
+                                                />
+                                            </td>
+                                        </tr>
+                                        ))
+                                    )}
+                                    </tbody>
+                                </table>
                                 </div>
                             </div>
-                            {error &&(
-                                <CardError error={error}/>
-                            )}
-                            {mensajeExito &&(
-                                <CardExito mensaje={mensajeExito}/>
-                            )}
-                            <div className="col-12">
-                                <button
-                                    type="button"
-                                    className="btn btn-success w-100 rounded-pill py-2"
-                                    onClick={clickBotonNuevoCliente}>
-                                Añadir cliente
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {/* Panel derecho - Tabla */}
-            <div className="col-12 col-lg-8 col-xxl-9">
-                <div className="card shadow-sm border-0 rounded-4 h-100">
-                    <div className="card-body p-4">
-                        <h2 className="fw-bold mb-3">Clientes</h2>
-                        {errorSuperior &&(
-                            <CardError error={errorSuperior}/>
-                        )}
-                        {mensajeExitoSuperior &&(
-                            <CardExito mensaje={mensajeExitoSuperior}/>
-                        )}
-                        <div className="d-flex gap-3 mb-3">
-                        <input
-                            type="text"
-                            className="form-control rounded-pill"
-                            placeholder="Buscar..."
-                            onChange={manejarBuscar}
-                            value={buscador}
-                        />
                         </div>
-
-                        <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
-                        <table className="table table-hover align-middle">
-                            <thead className="sticky-top" style={{ backgroundColor: '#111', color: '#fff' }}>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Apellidos</th>
-                                <th>Fecha inicio</th>
-                                <th>Fecha fin</th>
-                                <th>Alta</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {clientesFiltrados.length === 0 ? (
-                                <tr>
-                                <td colSpan="6" className="text-center py-4">
-                                    No hay clientes
-                                </td>
-                                </tr>
-                            ) : (
-                                clientesFiltrados.map(cliente => (
-                                <tr key={cliente.id}>
-                                    <td>{cliente.id}</td>
-                                    <td>{cliente.nombre}</td>
-                                    <td>{cliente.apellidos}</td>
-                                    <td>{formatDate(cliente.fecha_inicio)}</td>
-                                    <td>{formatDate(cliente.fecha_fin)}</td>
-                                    <td>
-                                    <input type="checkbox" checked={cliente.alta} readOnly />
-                                    </td>
-                                    <td className='d-flex gap-2'>
-                                        <BotonEliminar
-                                            texto={"Eliminar"}
-                                            onClick={() => manejarClickBorrado(cliente.id)}
-                                        />
-                                        <BotonEditar
-                                            texto={"Editar"}
-                                            onClick={() => manejarClickEditar(cliente.id)}
-                                        />
-                                    </td>
-                                </tr>
-                                ))
-                            )}
-                            </tbody>
-                        </table>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>
