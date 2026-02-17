@@ -182,7 +182,7 @@ app.post("/nuevoCliente", (req, res) => {
 });
 
 // metodo para actualizar los datos de un cliente
-app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
+app.put("/actualizarCliente/:id", (requerimientos, respuesta) =>{
     
     // extraemos la id del cliente que estamos editando
     const id = requerimientos.params.id;
@@ -555,7 +555,7 @@ app.get("/cliente/:id", (requerimientos, resultado) => {
 
     db.query(
         "SELECT * FROM clients WHERE id = ?",
-        id,
+        [id],
         (error, cliente) =>{
             if (error){
                 return resultado.status(400).json(
@@ -580,7 +580,7 @@ app.get("/entrenador/:id", (requerimientos, resultado) => {
 
     db.query(
         "SELECT * FROM trainers WHERE id = ?",
-        id,
+        [id],
         (error, enrtenador) =>{
             if (error){
                 return resultado.status(400).json(

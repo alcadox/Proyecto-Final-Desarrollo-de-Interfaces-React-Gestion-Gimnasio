@@ -59,9 +59,10 @@ const Cliente = () => {
 
    useEffect(() => {
         const consultarEntrenador = async () => {
-            if (!cliente.trainer_id || isNaN(cliente.trainer_id)) {
-                return setEntrenador(null)
-            }
+        if (cliente.trainer_id == null) {
+            setEntrenador(null)
+            return
+        }
 
             try {
                 const response = await axios.get(

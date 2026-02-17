@@ -4,6 +4,8 @@ import Clientes from './routes/Clientes';
 import InicioSesion from './routes/InicioSesion';
 import Entrenadores from './routes/Entrenadores';
 import Cliente from './routes/Cliente';
+import Entrenador from './routes/Entrenador';
+
 
 
 
@@ -17,6 +19,7 @@ function App() {
           <Route path="/Clientes" element={<Clientes/>} />
           <Route path="/Entrenadores" element={<Entrenadores/>} />
           <Route path="/Cliente/:id" element={<Cliente/>} />
+          <Route path="/Entrenador/:id" element={<Entrenador/>} />
         </Routes>
       </BrowserRouter>
     </div>

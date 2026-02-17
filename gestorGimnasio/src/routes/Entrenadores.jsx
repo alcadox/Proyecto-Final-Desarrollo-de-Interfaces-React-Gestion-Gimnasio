@@ -4,6 +4,9 @@ import Menu from '../components/Menu';
 import CardError from '../components/CardError';
 import CardExito from '../components/CardExito';
 import BotonEliminar from '../components/BotonEliminar';
+import BotonEditar from '../components/BotonEditar';
+import { useNavigate } from "react-router-dom";
+
 
 const Entrenadores = () => {
     // entrenadores: nombre de la variable que guarda los entrenadores
@@ -30,6 +33,8 @@ const Entrenadores = () => {
         if (!date) return '-';
         return new Date(date).toISOString().split('T')[0];
     };
+
+    const navigate = useNavigate();
 
     // buscador: nombre de la variable que guarda el texto del buscador
     // setBuscador: nombre de la funcion que actualiza "buscador"
@@ -203,6 +208,10 @@ const Entrenadores = () => {
             entrenador.especialidad?.toLowerCase().includes(texto)
         );
     });
+
+    const manejarClickEditar = (idEntrenador) => {
+        navigate(`/Entrenador/${idEntrenador}`);
+    };
 
     return (
         
@@ -432,10 +441,14 @@ const Entrenadores = () => {
                                             <input type="checkbox" checked={entrenador.alta} readOnly />
                                         </td>
                                         <td>{entrenador.especialidad}</td>
-                                        <td>
+                                        <td className='d-flex gap-2'>
                                             <BotonEliminar
                                                 texto={"Eliminar"}
                                                 onClick={() => manejarClickBorrado(entrenador.id)}
+                                            />
+                                            <BotonEditar
+                                                texto={"Editar"}
+                                                onClick={() => manejarClickEditar(entrenador.id)}
                                             />
                                         </td>
                                     </tr>
