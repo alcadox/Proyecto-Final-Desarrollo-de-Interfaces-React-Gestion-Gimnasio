@@ -12,10 +12,9 @@ const Cliente = () =>{
 
     const { id } = useParams();
 
-    const [cliente, setCliente] = useState([]);
-    const [clienteOriginal, setClienteOriginal] = useState([]);
-
-    const [entrenador, setEntrenador] = useState([]);
+    const [cliente, setCliente] = useState({});
+    const [clienteOriginal, setClienteOriginal] = useState({});
+    const [entrenador, setEntrenador] = useState(null);
 
     // error: guarda mensajes de error para mostrarlos en la pagina
     // seterror: funcion que actualiza 'error'
@@ -47,7 +46,13 @@ const Cliente = () =>{
     }, [id]);
 
     useEffect(() => {
+
         if (!cliente.trainer_id) {
+            setEntrenador(null);
+            return;
+        }
+
+        if (isNaN(cliente.trainer_id)) {
             setEntrenador(null);
             return;
         }
@@ -61,18 +66,18 @@ const Cliente = () =>{
                 if (response.data.length > 0) {
                     setEntrenador(response.data[0]);
                 } else {
-                    // entrenador no existe
                     setEntrenador(null);
                 }
 
-            } catch (err) {
-                console.error(err);
+            } catch {
                 setEntrenador(null);
             }
         };
 
         consultarEntrenador();
+
     }, [cliente.trainer_id]);
+
 
 
     const fetchCliente = async () => {
@@ -147,7 +152,7 @@ const Cliente = () =>{
         //previene que se recargue la pagina
         e.preventDefault();
 
-        if (clienteOriginal === cliente){
+        if (JSON.stringify(clienteOriginal) === JSON.stringify(cliente)) {
             setError("Ningún cambio detectado.");
             return;
         }
@@ -343,21 +348,20 @@ const Cliente = () =>{
                                         </textarea>
                                     </div>
                                     {/* Tarjeta interna de Entrenador */}
-                                    {
-                                        entrenador ? (
-                                            <CardUsuarioAsignado
-                                                usuario={entrenador}  // ojo, si es el entrenador, no cliente
-                                                titulo="Entrenador Asignado"
-                                                onChange={manejarCambio}
-                                                trainerId={cliente.trainer_id}
-                                                name="trainer_id"
-                                            />
-                                        ) : (
-                                            <div className="text-white fw-bold small">
-                                                Entrenador no encontrado.
-                                            </div>
-                                        )
-                                    }
+                                    <CardUsuarioAsignado
+                                        usuario={entrenador}
+                                        titulo="Entrenador Asignado"
+                                        onChange={manejarCambio}
+                                        trainerId={cliente.trainer_id}
+                                        name="trainer_id"
+                                    />
+
+                                    {cliente.trainer_id && !entrenador && (
+                                        <div className="text-danger small mt-2">
+                                            Entrenador no encontrado.
+                                        </div>
+                                    )}
+
                                 </div>
                             </div>
                         </div>
@@ -367,7 +371,7 @@ const Cliente = () =>{
                     <div className="col-lg-4">
                         <div className="card border-0 shadow-lg rounded-4 text-white h-100 pt-1" style={{ background: 'linear-gradient(180deg, #1e3a8a 0%, #172554 100%)' }}>
                             <div className="card-body pt-0 px-4 pb-4 d-flex flex-column">
-                                <div class="card-body d-flex justify-content-center">
+                                <div className="card-body d-flex justify-content-center">
                                     <img 
                                         src={
                                             cliente?.foto 
@@ -379,7 +383,7 @@ const Cliente = () =>{
                                         style={{ height: '150px', width: '150px'}}
                                     />
                                 </div>
-                                <div class="card-body d-flex justify-content-center pt-0">
+                                <div className="card-body d-flex justify-content-center pt-0">
                                     <button 
                                         type="button" 
                                         className="btn btn-primary"
@@ -388,7 +392,7 @@ const Cliente = () =>{
                                         Seleccionar imagen
                                     </button>
                                 </div>
-                                <div class="card-body d-flex justify-content-center pt-0">
+                                <div className="card-body d-flex justify-content-center pt-0">
                                     <button 
                                         type="button" 
                                         className="btn btn-success mt-2"
@@ -504,8 +508,6 @@ const Cliente = () =>{
             </div>
         </div>
     );
-
-
 }
 
 export default Cliente;

@@ -7,7 +7,7 @@ const CardUsuarioAsignado = ({usuario, titulo, onChange, name, trainerId}) => {
                 <div className="col-md-4">
                     <label className="fw-bold small text-secondary mb-2">ID</label>
                     <input
-                        type="text"
+                        type="number"
                         className="form-control bg-transparent text-white border-secondary"
                         style={{ borderColor: '#475569' }}
                         value={trainerId || ""}
@@ -22,7 +22,7 @@ const CardUsuarioAsignado = ({usuario, titulo, onChange, name, trainerId}) => {
                         className="form-control bg-transparent text-white border-secondary"
                         placeholder="Nombre"
                         style={{ borderColor: '#475569' }}
-                        value={usuario.nombre}
+                        value={usuario?.nombre || ""}
                     />
                 </div>
                 <div className="col-md-4">
@@ -32,7 +32,7 @@ const CardUsuarioAsignado = ({usuario, titulo, onChange, name, trainerId}) => {
                         className="form-control bg-transparent text-white border-secondary"
                         placeholder="Apellidos"
                         style={{ borderColor: '#475569' }}
-                        value={usuario.apellidos}
+                        value={usuario?.apellidos || ""}
                     />
                 </div>
                 <div className="col-md-4">
@@ -43,7 +43,7 @@ const CardUsuarioAsignado = ({usuario, titulo, onChange, name, trainerId}) => {
                         className="form-control bg-transparent text-white border-secondary"
                         placeholder="Teléfono"
                             style={{ borderColor: '#475569' }}
-                        value={usuario.telefono}
+                        value={usuario?.telefono || ""}
                     />
                 </div>
             </div>
