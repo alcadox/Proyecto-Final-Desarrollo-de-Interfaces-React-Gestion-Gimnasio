@@ -181,6 +181,158 @@ app.post("/nuevoCliente", (req, res) => {
     });
 });
 
+// metodo para actualizar los datos de un cliente
+app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
+    
+    // extraemos la id del cliente que estamos editando
+    const id = requerimientos.params.id;
+
+    // extraemos los datos enviados desde el frontend
+    const {
+        nombre,
+        apellidos,
+        dni,
+        fecha_nacimiento,
+        telefono,
+        email,
+        peso,
+        altura,
+        objetivo,
+        fecha_inicio,
+        fecha_fin,
+        trainer_id,
+        tipo_pago
+    } = requerimientos.body;
+
+    // si nos pasan un telefono, comprobamos que sea numerico, si no, error
+    if ( telefono && isNaN(telefono) ){
+        return res.status(400).json(
+            {
+                success: false,
+                message: "El número de teléfono no es correcto."
+            }
+        );
+    }
+
+    // comprobamos que el dni no exista en otro usuario
+    // hacemos un select a un cliente con ese dni, si nos devuelve
+    // un cliente (puede ser él mismo si el usuario no lo ha cambiado)
+    // para ello comprobamos también que la id no sea del mismo usuario que estamos editando
+    db.query(
+        "SELECT id FROM clients WHERE dni = ?", [dni], (error, resultado) =>{
+            if (error){
+                console.log(error);
+                return respuesta.status(500).json(
+                    {
+                        success: false,
+                        message: `Error al comprobar si el cliente con dni (${dni}) existe.`
+                    }
+                );
+            }
+
+            // si se ha encontrado un cliente comprobamos si la id
+            // es del mismo usuario que estamos editando, entonces permitimos el dni
+            if (resultado.length > 0 && id != resultado[0].id){
+                
+                return respuesta.status(400).json(
+                    {
+                        success: false,
+                        message: `El DNI (${dni}) ya existe en otro cliente.`
+                    }
+                );
+            }
+
+            // si trainer_id viene informado comprobamos que exista en la tabla trainers
+            if (trainer_id) {
+                db.query(
+                    "SELECT * FROM trainers WHERE id = ?", [trainer_id],
+                    (err, results) => {
+
+                        // error al comprobar entrenador
+                        if (err) {
+                            return respuesta.status(500).json({
+                                success: false,
+                                message: "Error al comprobar entrenador."
+                            });
+                        }
+
+                        // si no existe entrenador con ese id
+                        if (results.length === 0) {
+                            return respuesta.status(400).json({
+                                success: false,
+                                message: `El entrenador con ID (${trainer_id}) no existe`
+                            });
+                        }
+
+                        // si existe entrenador llamamos a la funcion que inserta el cliente
+                        actualizarCliente(); 
+                    }
+                );
+            } else {
+                // si no hay trainer_id actualizamos directamente
+                actualizarCliente();
+            }
+
+            function actualizarCliente() {
+                db.query(
+                    `
+                    UPDATE clients SET
+                        nombre = ?,
+                        apellidos = ?,
+                        fecha_nacimiento = ?,
+                        dni = ?,
+                        fecha_inicio = ?,
+                        fecha_fin = ?,
+                        tipo_pago = ?,
+                        alta = ?,
+                        telefono = ?,
+                        email = ?,
+                        peso = ?,
+                        altura = ?,
+                        objetivo = ?,
+                        trainer_id = ?
+                    WHERE id = ?
+                    `,
+                    [
+                        nombre,
+                        apellidos,
+                        fecha_nacimiento,
+                        dni,
+                        telefono || null, 
+                        email || null,
+                        fecha_inicio,
+                        fecha_fin || null,
+                        tipo_pago,
+                        peso || null,
+                        altura || null,
+                        objetivo || null,
+                        trainer_id || null,
+                        id
+                    ],
+                    (err, result) => {
+                        if (err){
+                            console.log(err);
+                            return respuesta.status(500).json(
+                                {
+                                    success: false,
+                                    message: "Error al actualizar el cliente."
+                                }
+                            );
+                        }
+
+                        return respuesta.json(
+                            {
+                                success: true,
+                                message: `Cliente con ID(${id}) actualizado correctamente.`
+                            }
+                        );
+                    }
+                );
+            }
+        }
+    );
+});
+
 
 // ruta get para obtener todos los entrenadores
 app.get("/entrenadores", (req, res) =>{
