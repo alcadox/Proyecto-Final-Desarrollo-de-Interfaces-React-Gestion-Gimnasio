@@ -6,6 +6,7 @@ import CabeceraEditar from "../components/CabeceraEditar";
 import CardUsuarioAsignado from "../components/CardUsuarioAsignado";
 import CardError from '../components/CardError';
 import CardExito from '../components/CardExito';
+import BotonActualizarUsuario from "../components/BotonActualizarUsuario";
 
 const Cliente = () =>{
 
@@ -460,13 +461,9 @@ const Cliente = () =>{
                                         </div>
                                         <div className="small text-info mt-1 fw-bold">CLIENTE ACTIVO</div>
                                     </div>
-                                    <button
-                                        className="btn btn-info w-100 fw-bold text-dark rounded-pill py-3 shadow-lg"
-                                        style={{ letterSpacing: '1px' }}
-                                        onClick={clickBotonActualizarcliente}
-                                        >
-                                        ACTUALIZAR FICHA
-                                    </button>
+                                    <BotonActualizarUsuario onClick={clickBotonActualizarcliente}>
+                                        ACTUALIZAR CLIENTE
+                                    </BotonActualizarUsuario>
                                 </div>
                             </div>
                         </div>
