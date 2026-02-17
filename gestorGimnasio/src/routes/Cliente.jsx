@@ -47,18 +47,33 @@ const Cliente = () =>{
     }, [id]);
 
     useEffect(() => {
-        if (cliente.trainer_id) {
-            const consultarEntrenador = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:3001/entrenador/${cliente.trainer_id}`);
-                    setEntrenador(response.data[0]);
-                } catch (err) {
-                    console.error(err);
-                }
-            };
-            consultarEntrenador();
+        if (!cliente.trainer_id) {
+            setEntrenador(null);
+            return;
         }
+
+        const consultarEntrenador = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3001/entrenador/${cliente.trainer_id}`
+                );
+
+                if (response.data.length > 0) {
+                    setEntrenador(response.data[0]);
+                } else {
+                    // entrenador no existe
+                    setEntrenador(null);
+                }
+
+            } catch (err) {
+                console.error(err);
+                setEntrenador(null);
+            }
+        };
+
+        consultarEntrenador();
     }, [cliente.trainer_id]);
+
 
     const fetchCliente = async () => {
         try {
@@ -113,6 +128,7 @@ const Cliente = () =>{
     }
 
     const manejarCambio = (e) => {
+
         const { name, value, type, checked } = e.target;
 
         setCliente(prev =>
@@ -247,6 +263,8 @@ const Cliente = () =>{
                                             className="form-control form-control-lg border-0 text-white shadow-none"
                                             style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}
                                             value={formatDate(cliente.fecha_inicio)}
+                                            name="fecha_inicio"
+                                            onChange={manejarCambio}
                                         />
                                     </div>
                                     <div className="col-md-6">
@@ -256,6 +274,8 @@ const Cliente = () =>{
                                             className="form-control form-control-lg border-0 text-white shadow-none"
                                             style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}
                                             value={formatDate(cliente.fecha_fin)}
+                                            name="fecha_fin"
+                                            onChange={manejarCambio}
                                         />
                                     </div>
                                 </div>
@@ -270,7 +290,9 @@ const Cliente = () =>{
                                                     type="number"
                                                     className="form-control form-control-lg border-0 bg-transparent text-white fw-bold p-0 shadow-none"
                                                     placeholder="00.0"
-                                                    value={cliente.peso}    
+                                                    value={cliente.peso}
+                                                    name="peso"
+                                                    onChange={manejarCambio}
                                                 />
                                                 <span className="text-secondary ms-2">kg</span>
                                             </div>
@@ -285,6 +307,8 @@ const Cliente = () =>{
                                                     className="form-control form-control-lg border-0 bg-transparent text-white fw-bold p-0 shadow-none"
                                                     placeholder="000"
                                                     value={cliente.altura}
+                                                    name="altura"
+                                                    onChange={manejarCambio}
                                                 />
                                                 <span className="text-secondary ms-2">cm</span>
                                             </div>
@@ -295,7 +319,10 @@ const Cliente = () =>{
                                             <label className="fw-bold small text-info mb-1">Plan Contratado</label>
                                             <select
                                                 className="form-select border-0 bg-transparent text-white fw-bold p-0 shadow-none cursor-pointer"
-                                                value={cliente.tipo_pago}>
+                                                value={cliente.tipo_pago}
+                                                name="tipo_pago"
+                                                onChange={manejarCambio}
+                                                >
                                                 <option className="bg-dark">MENSUAL</option>
                                                 <option className="bg-dark">ANUAL</option>
                                                 <option className="bg-dark">SEMANAL</option>
@@ -310,19 +337,24 @@ const Cliente = () =>{
                                             style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}
                                             placeholder="Ej: Pérdida de grasa y aumento de masa muscular..."
                                             value={cliente.objetivo}
+                                            name="objetivo"
+                                            onChange={manejarCambio}
                                             >
                                         </textarea>
                                     </div>
                                     {/* Tarjeta interna de Entrenador */}
                                     {
-                                        entrenador.id ? (
+                                        entrenador ? (
                                             <CardUsuarioAsignado
                                                 usuario={entrenador}  // ojo, si es el entrenador, no cliente
                                                 titulo="Entrenador Asignado"
+                                                onChange={manejarCambio}
+                                                trainerId={cliente.trainer_id}
+                                                name="trainer_id"
                                             />
                                         ) : (
                                             <div className="text-white fw-bold small">
-                                                Sin entrenador asignado
+                                                Entrenador no encontrado.
                                             </div>
                                         )
                                     }

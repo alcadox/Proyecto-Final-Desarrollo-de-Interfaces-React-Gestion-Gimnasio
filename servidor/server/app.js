@@ -273,8 +273,6 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                 // si no hay trainer_id actualizamos directamente
                 actualizarCliente();
             }
-            
-
 
             function actualizarCliente() {
 
