@@ -4,15 +4,25 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import CabeceraEditar from "../components/CabeceraEditar";
 import CardUsuarioAsignado from "../components/CardUsuarioAsignado";
-
+import CardError from '../components/CardError';
+import CardExito from '../components/CardExito';
 
 const Cliente = () =>{
 
     const { id } = useParams();
 
     const [cliente, setCliente] = useState([]);
+    const [clienteOriginal, setClienteOriginal] = useState([]);
+
     const [entrenador, setEntrenador] = useState([]);
 
+    // error: guarda mensajes de error para mostrarlos en la pagina
+    // seterror: funcion que actualiza 'error'
+    const [error, setError] = useState('');
+
+    //mensajeExito: nombre de la variable que guarda el mensaje de exito
+    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
+    const [mensajeExito, setMensajeExito] = useState('');
 
     const navigate = useNavigate();
 
@@ -54,14 +64,11 @@ const Cliente = () =>{
             const response = await axios.get(`http://localhost:3001/cliente/${id}`);
             console.log(response.data);
             setCliente(response.data[0]);
-
+            setClienteOriginal(response.data[0])
         } catch (err) {
             console.error(err);
         }
     };
-
-
-
 
     const enviarImagen = async () => {
 
@@ -117,7 +124,91 @@ const Cliente = () =>{
         );  
     };
 
+    const clickBotonActualizarcliente = async (e) => {
+        setMensajeExito("");
+        setError("");
+        //previene que se recargue la pagina
+        e.preventDefault();
 
+        if (clienteOriginal === cliente){
+            setError("Ningún cambio detectado.");
+            return;
+        }
+
+        // comprobamos que los campos obligatorios no esten vacios
+        if (!comprobacionBasicaCampos()) return;
+
+        try {
+            const response = await axios.post(`http://localhost:3001/actualizarCliente/${id}`, cliente);
+            // si todo OK
+            setMensajeExito(response.data.message);
+            setClienteOriginal(cliente);
+
+        } catch(err){
+
+            if(err.response && err.response.data){
+                // si el servidor responde con un error, mostramos el mensaje que nos envió
+                setError(err.response.data.message);
+            } else {
+                // cualquier otro error de conexión
+                alert("Error al conectar con el servidor");
+            }
+            console.log("Error al actualizar el cliente: ", err);
+
+        }
+    };
+
+    const comprobacionBasicaCampos = () => {
+        setError("");
+        setMensajeExito("");
+
+        // lista para guardar los campos vacios para posteriormente mostrarlos en un mensaje de error
+        let nuevosCamposVacios = [];
+        
+        // recorre el diccionario cliente y si la clave/campo es obligatorio
+        // entra en el switch y añade el campo vacio a la lista
+        for (let clave in cliente) {
+
+            switch (clave) {
+                case "dni":
+                    const dni = cliente[clave].trim().toUpperCase();
+                    const regex = /^[0-9]{8}[A-Z]$/;
+
+                    if (!regex.test(dni)) {
+                        setError("Formato de DNI inválido.");
+                        return false;
+                    }
+
+                    const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+                    const numero = parseInt(dni.substring(0, 8), 10);
+                    const letraCorrecta = letras[numero % 23];
+
+                    if (dni[8] !== letraCorrecta) {
+                        setError("La letra del DNI no es válida.");
+                        return false;
+                    }
+
+                break;
+                case "nombre":
+                case "apellidos":
+                case "fecha_nacimiento":
+                case "fecha_inicio":
+                    const valor = cliente[clave];
+
+                    if (typeof valor === "string" && !valor.trim()) {
+                        nuevosCamposVacios.push(clave);
+                    }
+                break;
+            }
+        }
+
+        if (nuevosCamposVacios.length > 0){
+            setError("Rellena los campos obligatorios: " + nuevosCamposVacios.join(", "))
+            return false;
+        } else {
+            return true;
+        }
+    };
 
 
     return (
@@ -130,7 +221,12 @@ const Cliente = () =>{
                     titulo={"Editar Cliente: " + cliente.nombre + " " + cliente.apellidos}
                     onClick={() => navigate("/Clientes")}
                 />
-
+                {error &&(
+                    <CardError error={error}/>
+                )}
+                {mensajeExito &&(
+                    <CardExito mensaje={mensajeExito}/>
+                )}
                 <div className="row g-4">
                     {/* Columna Principal - FICHA TÉCNICA (Ajustada con contraste alto) */}
                     <div className="col-lg-8">
@@ -364,7 +460,11 @@ const Cliente = () =>{
                                         </div>
                                         <div className="small text-info mt-1 fw-bold">CLIENTE ACTIVO</div>
                                     </div>
-                                    <button className="btn btn-info w-100 fw-bold text-dark rounded-pill py-3 shadow-lg" style={{ letterSpacing: '1px' }}>
+                                    <button
+                                        className="btn btn-info w-100 fw-bold text-dark rounded-pill py-3 shadow-lg"
+                                        style={{ letterSpacing: '1px' }}
+                                        onClick={clickBotonActualizarcliente}
+                                        >
                                         ACTUALIZAR FICHA
                                     </button>
                                 </div>

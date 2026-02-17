@@ -201,12 +201,13 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
         fecha_inicio,
         fecha_fin,
         trainer_id,
-        tipo_pago
+        tipo_pago,
+        alta
     } = requerimientos.body;
 
     // si nos pasan un telefono, comprobamos que sea numerico, si no, error
     if ( telefono && isNaN(telefono) ){
-        return res.status(400).json(
+        return respuesta.status(400).json(
             {
                 success: false,
                 message: "El número de teléfono no es correcto."
@@ -272,8 +273,11 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                 // si no hay trainer_id actualizamos directamente
                 actualizarCliente();
             }
+            
+
 
             function actualizarCliente() {
+
                 db.query(
                     `
                     UPDATE clients SET
@@ -296,13 +300,14 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                     [
                         nombre,
                         apellidos,
-                        fecha_nacimiento,
+                        formatearFecha(fecha_nacimiento),
                         dni,
+                        formatearFecha(fecha_inicio),
+                        formatearFecha(fecha_fin) || null,
+                        tipo_pago,
+                        alta,
                         telefono || null, 
                         email || null,
-                        fecha_inicio,
-                        fecha_fin || null,
-                        tipo_pago,
                         peso || null,
                         altura || null,
                         objetivo || null,
@@ -315,7 +320,7 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                             return respuesta.status(500).json(
                                 {
                                     success: false,
-                                    message: "Error al actualizar el cliente."
+                                    message: "Error al actualizar el cliente. (N:1)"
                                 }
                             );
                         }
@@ -329,6 +334,12 @@ app.post("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                     }
                 );
             }
+            
+            function formatearFecha(fecha) {
+                if (!fecha) return null;
+                return new Date(fecha).toISOString().split('T')[0];
+            }
+
         }
     );
 });

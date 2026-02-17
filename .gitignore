@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+servidor/server/uploads/clientes/*
+servidor/server/uploads/entrenadores/*
