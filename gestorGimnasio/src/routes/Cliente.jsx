@@ -6,6 +6,7 @@ import CabeceraEditar from "../components/CabeceraEditar"
 import CardError from "../components/CardError"
 import CardExito from "../components/CardExito"
 import BotonActualizarUsuario from "../components/BotonActualizarUsuario"
+import CardInformacion from "../components/CardInformacion"
 
 const Cliente = () => {
     const { id } = useParams()
@@ -17,6 +18,9 @@ const Cliente = () => {
     // error: guarda mensajes de error para mostrarlos en la pagina
     // seterror: funcion que actualiza 'error'
     const [error, setError] = useState("")
+
+    const [mensajeInfo, setMensajeInfo] = useState("")
+    const [mensajeInfoImagen, setMensajeInfoImagen] = useState("")
 
     //mensajeExito: nombre de la variable que guarda el mensaje de exito
     // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
@@ -53,15 +57,15 @@ const Cliente = () => {
             }
         }
 
-        fetchCliente();
+        fetchCliente()
     }, [id])
 
-   useEffect(() => {
+    useEffect(() => {
         const consultarEntrenador = async () => {
-        if (cliente.trainer_id == null) {
-            setEntrenador(null)
-            return
-        }
+            if (cliente.trainer_id == null) {
+                setEntrenador(null)
+                return
+            }
 
             try {
                 const response = await axios.get(
@@ -78,14 +82,14 @@ const Cliente = () => {
         consultarEntrenador()
     }, [cliente.trainer_id])
 
-
     const enviarImagen = async () => {
         setError("")
         setMensajeExito("")
+        setMensajeInfoImagen("")
 
         if (!file) {
-            setError(
-                "ERROR: Para actualizar una imagen primero debes seleccionar una nueva."
+            setMensajeInfoImagen(
+                "Para actualizar una imagen primero debes seleccionar una nueva."
             )
             return
         }
@@ -111,8 +115,6 @@ const Cliente = () => {
                 ...cliente,
                 foto: respuesta.data.path,
             })
-
-            setMensajeExito("Imagen actualizada correctamente")
         } catch (error) {
             console.error(error)
             alert("Error al subir imagen")
@@ -129,6 +131,12 @@ const Cliente = () => {
             ...prev,
             [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
         }))
+
+        if (name == "trainer_id") {
+            setMensajeInfo(
+                "Cambios de la asignación del entrenador sin guardar."
+            )
+        }
     }
 
     const clickBotonActualizarcliente = async e => {
@@ -146,13 +154,14 @@ const Cliente = () => {
         if (!comprobacionBasicaCampos()) return
 
         try {
-            const response = await axios.post(
+            const response = await axios.put(
                 `http://localhost:3001/actualizarCliente/${id}`,
                 cliente
             )
             // si todo OK
             setMensajeExito(response.data.message)
             setClienteOriginal(cliente)
+            setMensajeInfo("")
         } catch (err) {
             if (err.response && err.response.data) {
                 // si el servidor responde con un error, mostramos el mensaje que nos envió
@@ -239,8 +248,9 @@ const Cliente = () => {
                     }
                     onClick={() => navigate("/Clientes")}
                 />
-                {error && <CardError error={error} />}
-                {mensajeExito && <CardExito mensaje={mensajeExito} />}
+                {mensajeInfoImagen && (
+                    <CardInformacion mensaje={mensajeInfoImagen} />
+                )}
                 <div className="row g-4">
                     {/* Columna Principal - FICHA TÉCNICA (Ajustada con contraste alto) */}
                     <div className="col-lg-8">
@@ -397,6 +407,11 @@ const Cliente = () => {
                                     </div>
                                     {/* --- SECCIÓN ENTRENADOR --- */}
                                     <div className="col-12 mt-4">
+                                        {mensajeInfo && (
+                                            <CardInformacion
+                                                mensaje={mensajeInfo}
+                                            />
+                                        )}
                                         <div className="d-flex justify-content-between align-items-end mb-2">
                                             <label className="fw-bold small text-secondary">
                                                 Entrenador Personal
@@ -405,16 +420,19 @@ const Cliente = () => {
                                             {cliente.trainer_id ? (
                                                 entrenador ? (
                                                     <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
-                                                        <i className="bi bi-check-circle me-1"></i> Asignado
+                                                        <i className="bi bi-check-circle me-1"></i>{" "}
+                                                        Asignado
                                                     </span>
                                                 ) : (
                                                     <span className="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
-                                                        <i className="bi bi-hourglass-split me-1"></i> Buscando...
+                                                        <i className="bi bi-hourglass-split me-1"></i>{" "}
+                                                        Buscando...
                                                     </span>
                                                 )
                                             ) : (
                                                 <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
-                                                    <i className="bi bi-dash-circle me-1"></i> Sin asignar
+                                                    <i className="bi bi-dash-circle me-1"></i>{" "}
+                                                    Sin asignar
                                                 </span>
                                             )}
                                         </div>
@@ -426,7 +444,7 @@ const Cliente = () => {
                                                 className="card border-0 text-white shadow-sm overflow-hidden"
                                                 style={{
                                                     backgroundColor: "#253347", // Ligeramente más claro que el fondo
-                                                    transition: "all 0.3s ease"
+                                                    transition: "all 0.3s ease",
                                                 }}
                                             >
                                                 <div className="card-body p-3">
@@ -434,24 +452,47 @@ const Cliente = () => {
                                                         {/* Avatar */}
                                                         <div className="col-auto">
                                                             <img
-                                                                src={entrenador.foto ? `http://localhost:3001${entrenador.foto}` : "/images/img_desconocida.png"}
+                                                                src={
+                                                                    entrenador.foto
+                                                                        ? `http://localhost:3001${entrenador.foto}`
+                                                                        : "/images/img_desconocida.png"
+                                                                }
                                                                 alt="Foto Entrenador"
                                                                 className="rounded-circle border border-2 border-info"
-                                                                style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                                                                style={{
+                                                                    width: "60px",
+                                                                    height: "60px",
+                                                                    objectFit:
+                                                                        "cover",
+                                                                }}
                                                             />
                                                         </div>
                                                         {/* Info Textual */}
                                                         <div className="col">
                                                             <h6 className="mb-0 fw-bold text-white">
-                                                                {entrenador.nombre} {entrenador.apellidos}
+                                                                {
+                                                                    entrenador.nombre
+                                                                }{" "}
+                                                                {
+                                                                    entrenador.apellidos
+                                                                }
                                                             </h6>
                                                             <small className="text-info opacity-75 d-block mb-1">
-                                                                {entrenador.especialidad || "Entrenador General"}
+                                                                {entrenador.especialidad ||
+                                                                    "Entrenador General"}
                                                             </small>
                                                             {entrenador.email && (
-                                                                <small className="text-white-50 d-flex align-items-center" style={{fontSize: '0.8rem'}}>
+                                                                <small
+                                                                    className="text-white-50 d-flex align-items-center"
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "0.8rem",
+                                                                    }}
+                                                                >
                                                                     <i className="bi bi-envelope me-2"></i>
-                                                                    {entrenador.email}
+                                                                    {
+                                                                        entrenador.email
+                                                                    }
                                                                 </small>
                                                             )}
                                                         </div>
@@ -460,23 +501,50 @@ const Cliente = () => {
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                style={{ width: "36px", height: "36px" }}
+                                                                style={{
+                                                                    width: "36px",
+                                                                    height: "36px",
+                                                                }}
                                                                 title="Ver Perfil"
-                                                                onClick={() => navigate(`/Entrenador/${cliente.trainer_id}`)}
+                                                                onClick={() =>
+                                                                    navigate(
+                                                                        `/Entrenador/${cliente.trainer_id}`
+                                                                    )
+                                                                }
                                                             >
                                                                 <i className="bi bi-eye"></i>
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                style={{ width: "36px", height: "36px" }}
+                                                                style={{
+                                                                    width: "36px",
+                                                                    height: "36px",
+                                                                }}
                                                                 title="Desvincular"
                                                                 onClick={() => {
-                                                                    setCliente(prev => ({ ...prev, trainer_id: null }));
-                                                                    setEntrenador(null);
+                                                                    setCliente(
+                                                                        prev => ({
+                                                                            ...prev,
+                                                                            trainer_id:
+                                                                                null,
+                                                                        })
+                                                                    )
+                                                                    setEntrenador(
+                                                                        null
+                                                                    )
+                                                                    setMensajeInfo(
+                                                                        "Cambios de la asignación del entrenador sin guardar."
+                                                                    )
                                                                 }}
                                                             >
-                                                                <i className="bi bi-link-45deg" style={{fontSize: '1.2rem'}}></i>
+                                                                <i
+                                                                    className="bi bi-link-45deg"
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "1.2rem",
+                                                                    }}
+                                                                ></i>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -484,20 +552,34 @@ const Cliente = () => {
                                             </div>
                                         ) : (
                                             // OPCIÓN B: No hay entrenador o ID incorrecto -> Input de Asignación
-                                            <div 
+                                            <div
                                                 className="p-4 rounded-3 text-center border border-secondary border-opacity-25 border-dashed"
-                                                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                                                style={{
+                                                    backgroundColor:
+                                                        "rgba(255,255,255,0.02)",
+                                                }}
                                             >
-                                                {cliente.trainer_id && !entrenador ? (
+                                                {cliente.trainer_id &&
+                                                !entrenador ? (
                                                     // Caso B1: ID existe pero no devuelve datos (Error)
                                                     <div className="mb-3">
                                                         <div className="text-danger mb-2">
                                                             <i className="bi bi-exclamation-triangle me-2"></i>
-                                                            No se encuentra el entrenador (ID: {cliente.trainer_id})
+                                                            No se encuentra el
+                                                            entrenador (ID:{" "}
+                                                            {cliente.trainer_id}
+                                                            )
                                                         </div>
-                                                        <button 
+                                                        <button
                                                             className="btn btn-sm btn-outline-secondary"
-                                                            onClick={() => setCliente(prev => ({ ...prev, trainer_id: null }))}
+                                                            onClick={
+                                                                () => setCliente(prev => ({
+                                                                        ...prev,
+                                                                        trainer_id:
+                                                                            null,
+                                                                    })
+                                                                )
+                                                            }
                                                         >
                                                             Limpiar ID
                                                         </button>
@@ -506,9 +588,17 @@ const Cliente = () => {
                                                     // Caso B2: Totalmente vacío -> Input para asignar
                                                     <div className="d-flex flex-column align-items-center">
                                                         <div className="mb-3 text-white-50 small">
-                                                            Introduce el ID del entrenador para vincularlo
+                                                            Introduce el ID del
+                                                            entrenador para
+                                                            vincularlo
                                                         </div>
-                                                        <div className="input-group" style={{ maxWidth: "300px" }}>
+                                                        <div
+                                                            className="input-group"
+                                                            style={{
+                                                                maxWidth:
+                                                                    "300px",
+                                                            }}
+                                                        >
                                                             <span className="input-group-text bg-transparent border-secondary text-secondary">
                                                                 ID
                                                             </span>
@@ -518,8 +608,13 @@ const Cliente = () => {
                                                                 placeholder="Ej: 5"
                                                                 name="trainer_id"
                                                                 // Usamos value vacío si es null para que no salga warning de uncontrolled
-                                                                value={cliente.trainer_id || ""} 
-                                                                onChange={manejarCambio}
+                                                                value={
+                                                                    cliente.trainer_id ||
+                                                                    ""
+                                                                }
+                                                                onChange={
+                                                                    manejarCambio
+                                                                }
                                                             />
                                                         </div>
                                                     </div>
@@ -562,11 +657,14 @@ const Cliente = () => {
                                     <button
                                         type="button"
                                         className="btn btn-primary"
-                                        onClick={() =>
+                                        onClick={() => {
                                             document
                                                 .getElementById("fileinput")
                                                 .click()
-                                        }
+                                            setMensajeInfoImagen(
+                                                "Imagen cargada a la espera de ser subida."
+                                            )
+                                        }}
                                     >
                                         Seleccionar imagen
                                     </button>
@@ -708,13 +806,15 @@ const Cliente = () => {
                                             />
                                         </div>
                                         <div className="small text-info mt-1 fw-bold">
-                                            {
-                                                cliente.alta === 1
+                                            {cliente.alta === 1
                                                 ? "CLIENTE ACTIVO"
-                                                : "CLIENTE INACTIVO"
-                                            }
+                                                : "CLIENTE INACTIVO"}
                                         </div>
                                     </div>
+                                    {error && <CardError error={error} />}
+                                    {mensajeExito && (
+                                        <CardExito mensaje={mensajeExito} />
+                                    )}
                                     <BotonActualizarUsuario
                                         onClick={clickBotonActualizarcliente}
                                     >

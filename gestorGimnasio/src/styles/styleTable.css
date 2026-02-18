@@ -1,0 +1,9 @@
+.table > :not(caption) > * > * {
+    background-color: #1e293b !important;
+    color: white !important;
+}
+
+.table thead th {
+    background-color: #0b1220 !important; /* azul más oscuro */
+    color: #94a3b8 !important;
+}

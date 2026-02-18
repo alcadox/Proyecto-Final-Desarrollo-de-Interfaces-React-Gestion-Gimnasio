@@ -1,0 +1,55 @@
+/* NAVBAR SUPERIOR */
+.custom-navbar {
+    background-color: #2e3542 !important;
+    border-bottom: 1px solid #000000;
+}
+
+/* TEXTO BRAND */
+.custom-navbar .navbar-brand {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
+/* BOTÓN HAMBURGUESA */
+.custom-navbar .navbar-toggler {
+    border-color: #a0adc2;
+}
+
+/* OFFCANVAS PANEL */
+.custom-offcanvas {
+    background-color: #1e293b !important;
+    color: #e2e8f0;
+}
+
+/* HEADER DEL OFFCANVAS */
+.custom-offcanvas .offcanvas-header {
+    background-color: #0b1220;
+    border-bottom: 1px solid #243047;
+}
+
+/* TÍTULO */
+.custom-offcanvas .offcanvas-title {
+    color: #94a3b8;
+}
+
+/* LINKS */
+.custom-offcanvas .nav-link {
+    color: #cbd5e1;
+    transition: 0.2s ease;
+}
+
+/* HOVER */
+.custom-offcanvas .nav-link:hover {
+    background-color: #243047;
+    color: white;
+    border-radius: 6px;
+}
+
+/* LINK ACTIVO */
+.custom-offcanvas .nav-link.active {
+    color: white;
+}
+
+.custom-offcanvas {
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+}
