@@ -1,3 +1,4 @@
+// componente simple para mostrar una alerta de exito verde
 function CardExito({mensaje}){
     return(
         <div className="alert alert-success text-center" role="alert">
@@ -8,4 +9,4 @@ function CardExito({mensaje}){
     )
 }
 
-export default CardExito; 
+export default CardExito;

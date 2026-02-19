@@ -1,3 +1,4 @@
+// componente para mostrar advertencias o info en amarillo
 function CardInformacion ({mensaje}) {
     return(
         <div class="alert alert-warning d-flex align-items-center" role="alert">

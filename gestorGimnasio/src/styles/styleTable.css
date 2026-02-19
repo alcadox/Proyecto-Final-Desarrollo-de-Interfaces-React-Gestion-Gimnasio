@@ -1,9 +1,11 @@
+/* color de fondo y texto para las celdas generales de la tabla */
 .table > :not(caption) > * > * {
     background-color: #1e293b !important;
     color: white !important;
 }
 
+/* cabecera de la tabla */
 .table thead th {
-    background-color: #0b1220 !important; /* azul más oscuro */
+    background-color: #0b1220 !important; /* azul mas oscuro para resaltar */
     color: #94a3b8 !important;
 }

@@ -22,17 +22,17 @@ const Cliente = () => {
     const [mensajeInfo, setMensajeInfo] = useState("")
     const [mensajeInfoImagen, setMensajeInfoImagen] = useState("")
 
-    //mensajeExito: nombre de la variable que guarda el mensaje de exito
-    // setMensajeExito: nombre de la funcion que actualiza la varibale 'mensajeExito'
+    // mensajeexito: nombre de la variable que guarda el mensaje de exito
+    // setmensajeexito: nombre de la funcion que actualiza la variable 'mensajeexito'
     const [mensajeExito, setMensajeExito] = useState("")
 
     const navigate = useNavigate()
 
-    //array con todos los archivos seleccionados, en nuestro caso solo uno, el primero
+    // array con todos los archivos seleccionados, en nuestro caso solo uno, el primero
     const seleccionarImagen = e => {
-        //para mostrar las propiedades de la imagen seleccionada
-        //console.log(e.target.file[0])
-        //para colocarlo en el estado de mi componente
+        // para mostrar las propiedades de la imagen seleccionada
+        // console.log(e.target.file[0])
+        // para colocarlo en el estado de mi componente
         setFile(e.target.files[0])
     }
 
@@ -43,6 +43,7 @@ const Cliente = () => {
         return new Date(date).toISOString().split("T")[0]
     }
 
+    // cargamos los datos del cliente al entrar en la vista
     useEffect(() => {
         const fetchCliente = async () => {
             try {
@@ -60,6 +61,7 @@ const Cliente = () => {
         fetchCliente()
     }, [id])
 
+    // si el cliente tiene un entrenador asignado, buscamos sus datos
     useEffect(() => {
         const consultarEntrenador = async () => {
             if (cliente.trainer_id == null) {
@@ -82,6 +84,7 @@ const Cliente = () => {
         consultarEntrenador()
     }, [cliente.trainer_id])
 
+    // funcion para subir y actualizar la foto del cliente
     const enviarImagen = async () => {
         setError("")
         setMensajeExito("")
@@ -124,6 +127,7 @@ const Cliente = () => {
         setFile(null)
     }
 
+    // actualiza el estado del cliente segun escribimos en los inputs
     const manejarCambio = e => {
         const { name, value, type, checked } = e.target
 
@@ -139,10 +143,11 @@ const Cliente = () => {
         }
     }
 
+    // funcion para guardar los cambios del cliente en la base de datos
     const clickBotonActualizarcliente = async e => {
         setMensajeExito("")
         setError("")
-        //previene que se recargue la pagina
+        // previene que se recargue la pagina
         e.preventDefault()
 
         if (JSON.stringify(clienteOriginal) === JSON.stringify(cliente)) {
@@ -158,16 +163,16 @@ const Cliente = () => {
                 `http://localhost:3001/actualizarCliente/${id}`,
                 cliente
             )
-            // si todo OK
+            // si todo ok
             setMensajeExito(response.data.message)
             setClienteOriginal(cliente)
             setMensajeInfo("")
         } catch (err) {
             if (err.response && err.response.data) {
-                // si el servidor responde con un error, mostramos el mensaje que nos envió
+                // si el servidor responde con un error, mostramos el mensaje que nos envio
                 setError(err.response.data.message)
             } else {
-                // cualquier otro error de conexión
+                // cualquier otro error de conexion
                 alert("Error al conectar con el servidor")
             }
             console.log("Error al actualizar el cliente: ", err)
@@ -182,7 +187,7 @@ const Cliente = () => {
         let nuevosCamposVacios = []
 
         // recorre el diccionario cliente y si la clave/campo es obligatorio
-        // entra en el switch y añade el campo vacio a la lista
+        // entra en el switch y anade el campo vacio a la lista
         for (let clave in cliente) {
             switch (clave) {
                 case "dni": {
@@ -235,9 +240,9 @@ const Cliente = () => {
     return (
         <div className="min-vh-100 p-4" style={{ backgroundColor: "#0f172a" }}>
             {" "}
-            {/* Fondo Azul Oxford más profundo */}
+            {/* fondo azul oxford mas profundo */}
             <div className="container" style={{ maxWidth: "1100px" }}>
-                {/* Cabecera Flotante con efecto */}
+                {/* cabecera flotante con efecto */}
                 <CabeceraEditar
                     usuario={cliente}
                     titulo={
@@ -252,7 +257,7 @@ const Cliente = () => {
                     <CardInformacion mensaje={mensajeInfoImagen} />
                 )}
                 <div className="row g-4">
-                    {/* Columna Principal - FICHA TÉCNICA (Ajustada con contraste alto) */}
+                    {/* columna principal - ficha tecnica (ajustada con contraste alto) */}
                     <div className="col-lg-8">
                         <div
                             className="card border-0 shadow-lg rounded-4 overflow-hidden h-100"
@@ -268,7 +273,7 @@ const Cliente = () => {
                                 </h5>
                             </div>
                             <div className="card-body p-4">
-                                {/* Grid de fechas con Inputs oscuros de alto contraste */}
+                                {/* grid de fechas con inputs oscuros de alto contraste */}
                                 <div className="row g-3 mb-4">
                                     <div className="col-md-6">
                                         <label className="fw-bold small text-secondary mb-2 uppercase">
@@ -308,7 +313,7 @@ const Cliente = () => {
                                     </div>
                                 </div>
 
-                                {/* Métricas y Objetivo con diseño de "Widgets" */}
+                                {/* metricas y objetivo con diseno de widgets */}
                                 <div className="row g-3">
                                     <div className="col-md-4">
                                         <div
@@ -405,7 +410,7 @@ const Cliente = () => {
                                             onChange={manejarCambio}
                                         ></textarea>
                                     </div>
-                                    {/* --- SECCIÓN ENTRENADOR --- */}
+                                    {/* --- seccion entrenador --- */}
                                     <div className="col-12 mt-4">
                                         {mensajeInfo && (
                                             <CardInformacion
@@ -416,7 +421,7 @@ const Cliente = () => {
                                             <label className="fw-bold small text-secondary">
                                                 Entrenador Personal
                                             </label>
-                                            {/* Pequeño badge indicador */}
+                                            {/* pequeno badge indicador */}
                                             {cliente.trainer_id ? (
                                                 entrenador ? (
                                                     <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
@@ -437,19 +442,19 @@ const Cliente = () => {
                                             )}
                                         </div>
 
-                                        {/* Lógica de Renderizado Condicional */}
+                                        {/* logica de renderizado condicional */}
                                         {entrenador ? (
-                                            // OPCIÓN A: Entrenador encontrado y cargado -> Tarjeta "Pro"
+                                            // opcion a: entrenador encontrado y cargado -> tarjeta pro
                                             <div
                                                 className="card border-0 text-white shadow-sm overflow-hidden"
                                                 style={{
-                                                    backgroundColor: "#253347", // Ligeramente más claro que el fondo
+                                                    backgroundColor: "#253347", // ligeramente mas claro que el fondo
                                                     transition: "all 0.3s ease",
                                                 }}
                                             >
                                                 <div className="card-body p-3">
                                                     <div className="row align-items-center">
-                                                        {/* Avatar */}
+                                                        {/* avatar */}
                                                         <div className="col-auto">
                                                             <img
                                                                 src={
@@ -467,7 +472,7 @@ const Cliente = () => {
                                                                 }}
                                                             />
                                                         </div>
-                                                        {/* Info Textual */}
+                                                        {/* info textual */}
                                                         <div className="col">
                                                             <h6 className="mb-0 fw-bold text-white">
                                                                 {
@@ -496,7 +501,7 @@ const Cliente = () => {
                                                                 </small>
                                                             )}
                                                         </div>
-                                                        {/* Botones de Acción */}
+                                                        {/* botones de accion */}
                                                         <div className="col-auto d-flex gap-2">
                                                             <button
                                                                 type="button"
@@ -551,7 +556,7 @@ const Cliente = () => {
                                                 </div>
                                             </div>
                                         ) : (
-                                            // OPCIÓN B: No hay entrenador o ID incorrecto -> Input de Asignación
+                                            // opcion b: no hay entrenador o id incorrecto -> input de asignacion
                                             <div
                                                 className="p-4 rounded-3 text-center border border-secondary border-opacity-25 border-dashed"
                                                 style={{
@@ -561,7 +566,7 @@ const Cliente = () => {
                                             >
                                                 {cliente.trainer_id &&
                                                 !entrenador ? (
-                                                    // Caso B1: ID existe pero no devuelve datos (Error)
+                                                    // caso b1: id existe pero no devuelve datos (error)
                                                     <div className="mb-3">
                                                         <div className="text-danger mb-2">
                                                             <i className="bi bi-exclamation-triangle me-2"></i>
@@ -585,7 +590,7 @@ const Cliente = () => {
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    // Caso B2: Totalmente vacío -> Input para asignar
+                                                    // caso b2: totalmente vacio -> input para asignar
                                                     <div className="d-flex flex-column align-items-center">
                                                         <div className="mb-3 text-white-50 small">
                                                             Introduce el ID del
@@ -607,7 +612,7 @@ const Cliente = () => {
                                                                 className="form-control bg-transparent border-secondary text-white shadow-none"
                                                                 placeholder="Ej: 5"
                                                                 name="trainer_id"
-                                                                // Usamos value vacío si es null para que no salga warning de uncontrolled
+                                                                // usamos value vacio si es null para que no salga warning de uncontrolled
                                                                 value={
                                                                     cliente.trainer_id ||
                                                                     ""
@@ -622,13 +627,13 @@ const Cliente = () => {
                                             </div>
                                         )}
                                     </div>
-                                    {/* --- FIN SECCIÓN ENTRENADOR --- */}
+                                    {/* --- fin seccion entrenador --- */}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Columna Lateral (Datos Personales) - Manteniendo el estilo Cobalt original */}
+                    {/* columna lateral (datos personales) - manteniendo el estilo cobalt original */}
                     <div className="col-lg-4">
                         <div
                             className="card border-0 shadow-lg rounded-4 text-white h-100 pt-1"

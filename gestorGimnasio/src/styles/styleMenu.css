@@ -1,51 +1,51 @@
-/* NAVBAR SUPERIOR */
+/* navbar superior */
 .custom-navbar {
     background-color: #2e3542 !important;
     border-bottom: 1px solid #000000;
 }
 
-/* TEXTO BRAND */
+/* texto brand */
 .custom-navbar .navbar-brand {
     color: #e2e8f0 !important;
     font-weight: 600;
 }
 
-/* BOTÓN HAMBURGUESA */
+/* boton hamburguesa */
 .custom-navbar .navbar-toggler {
     border-color: #a0adc2;
 }
 
-/* OFFCANVAS PANEL */
+/* panel lateral offcanvas */
 .custom-offcanvas {
     background-color: #1e293b !important;
     color: #e2e8f0;
 }
 
-/* HEADER DEL OFFCANVAS */
+/* cabecera del panel */
 .custom-offcanvas .offcanvas-header {
     background-color: #0b1220;
     border-bottom: 1px solid #243047;
 }
 
-/* TÍTULO */
+/* titulo */
 .custom-offcanvas .offcanvas-title {
     color: #94a3b8;
 }
 
-/* LINKS */
+/* enlaces */
 .custom-offcanvas .nav-link {
     color: #cbd5e1;
     transition: 0.2s ease;
 }
 
-/* HOVER */
+/* al pasar el raton por encima */
 .custom-offcanvas .nav-link:hover {
     background-color: #243047;
     color: white;
     border-radius: 6px;
 }
 
-/* LINK ACTIVO */
+/* enlace activo */
 .custom-offcanvas .nav-link.active {
     color: white;
 }

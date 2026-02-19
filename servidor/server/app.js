@@ -16,7 +16,6 @@ const multer = require('multer')
 // modulo para trabajar con rutas de archivos y carpetas
 const path = require('path')
 
-
 // activamos cors en toda la aplicacion
 app.use(cors());
 
@@ -28,7 +27,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   user: "gymuser",        // usuario de la base de datos
   host: "localhost",      // servidor donde esta mysql
-  password: "gympass",    // contraseña del usuario
+  password: "gympass",    // contrasena del usuario
   database: "gymdb",      // nombre de la base de datos
 });
 
@@ -217,8 +216,8 @@ app.put("/actualizarCliente/:id", (requerimientos, respuesta) =>{
 
     // comprobamos que el dni no exista en otro usuario
     // hacemos un select a un cliente con ese dni, si nos devuelve
-    // un cliente (puede ser él mismo si el usuario no lo ha cambiado)
-    // para ello comprobamos también que la id no sea del mismo usuario que estamos editando
+    // un cliente (puede ser el mismo si el usuario no lo ha cambiado)
+    // para ello comprobamos tambien que la id no sea del mismo usuario que estamos editando
     db.query(
         "SELECT id FROM clients WHERE dni = ?", [dni], (error, resultado) =>{
             if (error){
@@ -333,6 +332,7 @@ app.put("/actualizarCliente/:id", (requerimientos, respuesta) =>{
                 );
             }
             
+            // nos asegura que la fecha se guarde bien en la base de datos
             function formatearFecha(fecha) {
                 if (!fecha) return null;
                 return new Date(fecha).toISOString().split('T')[0];
@@ -448,10 +448,10 @@ app.post("/nuevoEntrenador", (req, res) => {
 // ruta para login de usuario
 app.post("/login", (req, res) => {
 
-    // obtenemos usuario y contraseña del body
+    // obtenemos usuario y contrasena del body
     const { username, password } = req.body;
 
-    // buscamos la contraseña del usuario en la base de datos
+    // buscamos la contrasena del usuario en la base de datos
     const consulta = "SELECT password FROM auth_users WHERE username = ?";
     db.query(consulta, [username], (error, resultado) => {
 
@@ -465,10 +465,10 @@ app.post("/login", (req, res) => {
             return res.json({ ok: false });
         }
 
-        // obtenemos contraseña guardada en la base de datos
+        // obtenemos contrasena guardada en la base de datos
         const passwordBD = resultado[0].password;
 
-        // comparamos contraseña enviada con la almacenada
+        // comparamos contrasena enviada con la almacenada
         if (password !== passwordBD) {
             return res.json({ ok: false });
         }
@@ -516,6 +516,7 @@ app.delete("/eliminarCliente", (req, res) =>{
 
 app.delete("/eliminarEntrenador", (req, res) =>{
 
+    // igual que con cliente, pillamos la id a borrar
     const {id} = req.body;
 
     const consulta = "DELETE FROM trainers WHERE id = ?";
@@ -590,7 +591,7 @@ app.get("/entrenador/:id", (requerimientos, resultado) => {
                     }
                 );
             } else {
-                // devolvemos los datos del cliente encontrado
+                // devolvemos los datos del entrenador encontrado
                 return resultado.json(enrtenador);
             }
         }
@@ -712,7 +713,7 @@ app.post('/entrenadores/foto', upload.single('image'), (req, res) => {
 });
 
 
-// Actualizar datos del entrenador
+// actualizar datos del entrenador
 app.put("/actualizarEntrenador/:id", (req, res) => {
     const id = req.params.id;
     const {
@@ -734,7 +735,7 @@ app.put("/actualizarEntrenador/:id", (req, res) => {
         return res.status(400).json({ success: false, message: "Teléfono incorrecto." });
     }
 
-    // Comprobar DNI duplicado (excluyendo al propio entrenador)
+    // comprobar dni duplicado (excluyendo al propio entrenador)
     db.query("SELECT id FROM trainers WHERE dni = ?", [dni], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Error al verificar DNI." });
         
@@ -767,17 +768,17 @@ app.put("/actualizarEntrenador/:id", (req, res) => {
     });
 });
 
-// Obtener clientes asignados a un entrenador específico
+// obtener clientes asignados a un entrenador especifico
 app.get("/entrenador/:id/clientes", (req, res) => {
     const id = req.params.id;
-    // Traemos también la foto para que quede bonito en la lista
+    // traemos tambien la foto para que quede bonito en la lista
     db.query("SELECT id, nombre, apellidos, dni, foto FROM clients WHERE trainer_id = ?", [id], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: "Error al obtener clientes." });
         res.json(results);
     });
 });
 
-// Desvincular un cliente de su entrenador (poner trainer_id a NULL)
+// desvincular un cliente de su entrenador (poner trainer_id a null)
 app.put("/desasignarCliente", (req, res) => {
     const { clienteId } = req.body;
     db.query("UPDATE clients SET trainer_id = NULL WHERE id = ?", [clienteId], (err, result) => {

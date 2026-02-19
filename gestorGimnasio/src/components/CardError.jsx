@@ -1,3 +1,4 @@
+// componente simple para mostrar una alerta de error roja
 function CardError({error}){
     return(
         <div className="alert alert-danger rounded-3 text-center py-2">
@@ -6,4 +7,4 @@ function CardError({error}){
     )
 }
 
-export default CardError; 
+export default CardError;

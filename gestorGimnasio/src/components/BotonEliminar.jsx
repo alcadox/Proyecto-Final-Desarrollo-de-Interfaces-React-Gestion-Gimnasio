@@ -1,5 +1,5 @@
+// componente boton para eliminar en las tablas
 function BotonEliminar ({texto, onClick}){
-
     return(
         <div>
             <button 

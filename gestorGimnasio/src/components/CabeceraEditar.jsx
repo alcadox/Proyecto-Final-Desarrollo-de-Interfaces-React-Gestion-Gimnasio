@@ -1,4 +1,5 @@
-
+// cabecera que se muestra al editar un cliente o entrenador
+// recibe el usuario para sacar su id, el titulo y la funcion para ir hacia atras (cerrar)
 const CabeceraEditar = ({usuario, titulo, onClick}) =>{
     return(
         <div className="bg-white bg-opacity-10 rounded-4 p-4 mb-4 d-flex justify-content-between align-items-center shadow-sm" style={{ backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>

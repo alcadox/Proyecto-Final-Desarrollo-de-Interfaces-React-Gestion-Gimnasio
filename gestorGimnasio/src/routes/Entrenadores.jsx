@@ -8,12 +8,15 @@ import BotonEditar from "../components/BotonEditar"
 import { useNavigate } from "react-router-dom"
 
 const Entrenadores = () => {
+    // estado para guardar la lista de entrenadores
     const [entrenadores, setEntrenadores] = useState([])
 
+    // cargamos los entrenadores al entrar en la pagina
     useEffect(() => {
         traerEntrenadores()
     }, [])
 
+    // peticion al backend para traer todos los entrenadores
     const traerEntrenadores = async () => {
         try {
             const response = await axios.get(
@@ -25,6 +28,7 @@ const Entrenadores = () => {
         }
     }
 
+    // funcion para que la fecha no de problemas al mostrarla
     const formatDate = date => {
         if (!date) return "-"
         return new Date(date).toISOString().split("T")[0]
@@ -32,12 +36,14 @@ const Entrenadores = () => {
 
     const navigate = useNavigate()
 
+    // estados para guardar lo que buscamos y diferentes mensajes
     const [buscador, setBuscador] = useState("")
     const [error, setError] = useState("")
     const [mensajeExito, setMensajeExito] = useState("")
     const [errorSuperior, setErrorSuperior] = useState("")
     const [mensajeExitoSuperior, setMensajeExitoSuperior] = useState("")
 
+    // estado inicial del formulario para crear entrenadores
     const [formData, setFormData] = useState({
         nombre: "",
         apellidos: "",
@@ -53,6 +59,7 @@ const Entrenadores = () => {
         alta: "",
     })
 
+    // actualiza el estado segun escribimos en el formulario
     const handleChange = e => {
         const { name, value, type, checked } = e.target
         setFormData(prev => ({
@@ -61,9 +68,11 @@ const Entrenadores = () => {
         }))
     }
 
+    // funcion que se ejecuta al enviar el formulario para crear un entrenador
     const clickBotonNuevoEntrenador = async e => {
         setMensajeExitoSuperior("")
         setErrorSuperior("")
+        // previene que se recargue la pagina entera
         e.preventDefault()
 
         if (!comprobacionBasicaCampos()) return
@@ -74,7 +83,7 @@ const Entrenadores = () => {
                 formData
             )
             setMensajeExito(response.data.message)
-            traerEntrenadores()
+            traerEntrenadores() // recargamos la lista si fue bien
         } catch (err) {
             if (err.response && err.response.data) {
                 setError(err.response.data.message)
@@ -85,6 +94,7 @@ const Entrenadores = () => {
         }
     }
 
+    // valida que los campos obligatorios esten rellenos y el dni sea correcto
     const comprobacionBasicaCampos = () => {
         setError("")
         setMensajeExito("")
@@ -125,6 +135,7 @@ const Entrenadores = () => {
             }
         }
 
+        // avisamos de que campos faltan
         if (nuevosCamposVacios.length > 0) {
             setError(
                 "Rellena los campos obligatorios: " +
@@ -136,10 +147,12 @@ const Entrenadores = () => {
         }
     }
 
+    // actualiza el estado del buscador
     const manejarBuscar = e => {
         setBuscador(e.target.value)
     }
 
+    // funcion para eliminar un entrenador por su id
     const manejarClickBorrado = async idEntrenadorBorrar => {
         try {
             const response = await axios.delete(
@@ -163,6 +176,7 @@ const Entrenadores = () => {
         }
     }
 
+    // filtramos la lista segun lo que haya en el buscador
     const entrenadoresFiltrados = entrenadores.filter(entrenador => {
         const texto = buscador.toLowerCase()
 
@@ -174,17 +188,18 @@ const Entrenadores = () => {
         )
     })
 
+    // te manda a la vista del entrenador para editarlo
     const manejarClickEditar = idEntrenador => {
         navigate(`/Entrenador/${idEntrenador}`)
     }
 
-    // Estilo común para inputs
+    // estilo comun para inputs
     const inputStyle = {
         backgroundColor: "#0f172a",
         border: "1px solid #334155",
         color: "white",
     }
-    // Estilo para filas (tarjeta) en la tabla
+    // estilo para filas (tarjeta) en la tabla
     const rowCardStyle = {
         display: "grid",
         gridTemplateColumns: "60px 1fr 1fr 120px 120px 60px 160px 160px",
@@ -208,7 +223,7 @@ const Entrenadores = () => {
             <div className="container-fluid px-4">
                 <Menu nombre={"Admin"} />
                 <div className="row g-4">
-                    {/* Panel izquierdo - Alta entrenador */}
+                    {/* panel izquierdo - alta entrenador */}
                     <div className="col-12 col-lg-4 col-xxl-3 ">
                         <div
                             className="card shadow-lg border-0 rounded-4 h-100"
@@ -428,7 +443,7 @@ const Entrenadores = () => {
                         </div>
                     </div>
 
-                    {/* Panel derecho - Tabla */}
+                    {/* panel derecho - tabla */}
                     <div className="col-12 col-lg-8 col-xxl-9">
                         <div
                             className="card shadow-lg border-0 rounded-4 h-100"

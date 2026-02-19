@@ -14,7 +14,7 @@ const Entrenador = () => {
     const [entrenador, setEntrenador] = useState({})
     const [entrenadorOriginal, setEntrenadorOriginal] = useState({})
 
-    // Lista de clientes asignados a este entrenador
+    // lista de clientes asignados a este entrenador
     const [clientesAsignados, setClientesAsignados] = useState([])
 
     const [error, setError] = useState("")
@@ -32,11 +32,11 @@ const Entrenador = () => {
 
     const [todosLosClientes, setTodosLosClientes] = useState([])
 
-    // Función para cargar clientes sin entrenador
+    // funcion para cargar clientes sin entrenador
     const fetchClientesSinEntrenador = async () => {
         try {
             const response = await axios.get("http://localhost:3001/clientes")
-            // Filtramos los que no tienen trainer_id o cuyo trainer_id sea null
+            // filtramos los que no tienen trainer_id o cuyo trainer_id sea null
             const disponibles = response.data.filter(c => !c.trainer_id)
             setTodosLosClientes(disponibles)
         } catch (err) {
@@ -46,9 +46,9 @@ const Entrenador = () => {
 
     useEffect(() => {
         fetchClientesSinEntrenador()
-    }, [clientesAsignados]) // Recargar cuando cambie la lista de asignados
+    }, [clientesAsignados]) // recargar cuando cambie la lista de asignados
 
-    // Función para ASIGNAR un cliente al entrenador actual
+    // funcion para asignar un cliente al entrenador actual
     const asignarCliente = async clienteId => {
         try {
             await axios.put("http://localhost:3001/asignarEntrenador", {
@@ -56,14 +56,14 @@ const Entrenador = () => {
                 trainerId: id,
             })
             setmensajeExitoClienteAsignado("Cliente asignado con éxito.")
-            fetchClientesAsignados() // Recargamos la lista del entrenador
+            fetchClientesAsignados() // recargamos la lista del entrenador
             setError("")
         } catch (err) {
             setError("Error al asignar el cliente.")
         }
     }
 
-    // 1. Cargar datos del Entrenador
+    // 1. cargar datos del entrenador
     useEffect(() => {
         const fetchEntrenador = async () => {
             try {
@@ -82,7 +82,7 @@ const Entrenador = () => {
         fetchEntrenador()
     }, [id])
 
-    // 2. Cargar Clientes Asignados
+    // 2. cargar clientes asignados
     const fetchClientesAsignados = async () => {
         try {
             const response = await axios.get(
@@ -98,7 +98,7 @@ const Entrenador = () => {
         fetchClientesAsignados()
     }, [id])
 
-    // Manejo de Imagen
+    // manejo de imagen
     const seleccionarImagen = e => {
         setFile(e.target.files[0])
     }
@@ -137,7 +137,7 @@ const Entrenador = () => {
         setFile(null)
     }
 
-    // Manejo de Inputs
+    // manejo de inputs
     const manejarCambio = e => {
         const { name, value, type, checked } = e.target
         setEntrenador(prev => ({
@@ -146,7 +146,7 @@ const Entrenador = () => {
         }))
     }
 
-    // Validación
+    // validacion
     const comprobacionBasicaCampos = () => {
         setError("")
         setMensajeExito("")
@@ -192,7 +192,7 @@ const Entrenador = () => {
         return true
     }
 
-    // Actualizar Entrenador
+    // actualizar entrenador
     const clickBotonActualizarEntrenador = async e => {
         setmensajeExitoClienteAsignado("")
         setMensajeExito("")
@@ -222,7 +222,7 @@ const Entrenador = () => {
         }
     }
 
-    // Desvincular Cliente
+    // desvincular cliente
     const desvincularCliente = async clienteId => {
         if (
             !window.confirm(
@@ -235,7 +235,7 @@ const Entrenador = () => {
             await axios.put("http://localhost:3001/desasignarCliente", {
                 clienteId,
             })
-            // Recargamos la lista localmente filtrando el eliminado
+            // recargamos la lista localmente filtrando el eliminado
             setClientesAsignados(prev => prev.filter(c => c.id !== clienteId))
             setmensajeExitoClienteAsignado(
                 "Cliente desvinculado correctamente."
@@ -252,7 +252,7 @@ const Entrenador = () => {
     return (
         <div className="min-vh-100 p-4" style={{ backgroundColor: "#0f172a" }}>
             <div className="container" style={{ maxWidth: "1100px" }}>
-                {/* Cabecera reutilizada */}
+                {/* cabecera reutilizada */}
                 <CabeceraEditar
                     usuario={entrenador}
                     titulo={
@@ -268,7 +268,7 @@ const Entrenador = () => {
                 )}
 
                 <div className="row g-4">
-                    {/* Columna Principal - FICHA TÉCNICA */}
+                    {/* columna principal - ficha tecnica */}
                     <div className="col-lg-8">
                         <div
                             className="card border-0 shadow-lg rounded-4 overflow-hidden h-100"
@@ -284,7 +284,7 @@ const Entrenador = () => {
                                 </h5>
                             </div>
                             <div className="card-body p-4">
-                                {/* Fechas */}
+                                {/* fechas */}
                                 <div className="row g-3 mb-4">
                                     <div className="col-md-6">
                                         <label className="fw-bold small text-secondary mb-2 uppercase">
@@ -324,7 +324,7 @@ const Entrenador = () => {
                                     </div>
                                 </div>
 
-                                {/* Widgets: Especialidad y Pago (Adaptado de Peso/Altura) */}
+                                {/* widgets: especialidad y pago (adaptado de peso/altura) */}
                                 <div className="row g-3">
                                     <div className="col-md-6">
                                         <div
@@ -383,7 +383,7 @@ const Entrenador = () => {
                                         </div>
                                     </div>
 
-                                    {/* Notas*/}
+                                    {/* notas */}
                                     <div className="col-12 mt-3">
                                         <label className="fw-bold small text-secondary mb-2">
                                             Notas / Observaciones
@@ -402,7 +402,7 @@ const Entrenador = () => {
                                         ></textarea>
                                     </div>
 
-                                    {/* LISTA DE CLIENTES ASIGNADOS */}
+                                    {/* lista de clientes asignados */}
                                     <div className="col-12 mt-4">
                                         {mensajeExitoClienteAsignado && (
                                             <CardExito
@@ -417,7 +417,7 @@ const Entrenador = () => {
                                                 {clientesAsignados.length})
                                             </h6>
 
-                                            {/* Selector para añadir cliente */}
+                                            {/* selector para anadir cliente */}
                                             <div className="d-flex gap-2">
                                                 <select
                                                     className="form-select form-select-sm bg-dark text-white border-secondary"
@@ -558,7 +558,7 @@ const Entrenador = () => {
                         </div>
                     </div>
 
-                    {/* Columna Lateral (Igual que Cliente) */}
+                    {/* columna lateral (igual que cliente) */}
                     <div className="col-lg-4">
                         <div
                             className="card border-0 shadow-lg rounded-4 text-white h-100 pt-1"

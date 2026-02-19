@@ -1,5 +1,5 @@
+// componente boton para editar en las tablas
 function BotonEditar ({texto, onClick}){
-
     return(
         <div>
             <button 
